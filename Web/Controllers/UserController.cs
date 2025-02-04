@@ -9,7 +9,7 @@ namespace Web.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        [HttpGet("User/{id}")]
+        [HttpGet("User")]
 
         public IActionResult Get()
         {
@@ -22,6 +22,7 @@ namespace Web.Controllers
                     NameAccount="facu", 
                     Password="facu123", 
                     Email="facu@hotmail.com",
+                    Dni=12323456,
                     PhoneNumber="+543413500300",
                     Address="Santafe 1234",
                 },
@@ -33,6 +34,7 @@ namespace Web.Controllers
                     NameAccount="cris",
                     Password="cris123",
                     Email="cris@hotmail.com",
+                    Dni=34732713,
                     PhoneNumber="+543415155611",
                     Address="San Lorenzo 3624",
                 }

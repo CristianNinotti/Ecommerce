@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Helpers\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
