@@ -1,4 +1,7 @@
 ﻿using Application.Interfaces;
+using Application.Mappings;
+using Application.Models.Request;
+using Application.Models.Response;
 using Domain.Entities;
 using Domain.Interfaces;
 using System;
@@ -11,36 +14,52 @@ namespace Application.Services
 {
     public class MinoristaService : IMinoristaService
     {
-        // private readonly IMinoristaRepository _minoristaRepository;
+        private readonly IMinoristaRepository _minoristaRepository;
+
+        public MinoristaService (IMinoristaRepository minoristaRepository)
+        {
+            _minoristaRepository = minoristaRepository;
+        }
         public List<Minorista> GetAllMinorista()
         {
-            return new List<Minorista>
+            var minoristas = _minoristaRepository.GetAllMinoristas();
+            return minoristas.ToList();
+        }
+
+        public MinoristaResponse GetMinoristaById(int id)
+        {
+            var minorista = _minoristaRepository.GetMinoristaById(id);
+            return MinoristaProfile.ToMinoristaResponse(minorista);
+        }
+
+        public MinoristaResponse CreateMinorista(MinoristaRequest minorista)
+        {
+            var minoristaEntity = MinoristaProfile.ToMinoristaEntity(minorista);
+            _minoristaRepository.CreateMinorista(minoristaEntity);
+            return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
+        }
+
+        public MinoristaResponse UpdateMinorista(int id, MinoristaRequest minorista)
+        {
+            var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
+            if (minoristaEntity == null) 
             {
-                new () 
-                {
-                    Id=1,
-                    FirstName="Facundo",
-                    LastName="Solari",
-                    NameAccount="facu",
-                    Password="facu123",
-                    Email="facu@hotmail.com",
-                    Dni=12323456,
-                    PhoneNumber="+543413500300",
-                    Address="Santafe 1234",
-                },
-                new ()
-                {
-                    Id=2,
-                    FirstName="Cristian",
-                    LastName="Ninotti",
-                    NameAccount="cris",
-                    Password="cris123",
-                    Email="cris@hotmail.com",
-                    Dni=34732713,
-                    PhoneNumber="+543415155611",
-                    Address="San Lorenzo 3624",
-                }
-            };
+                throw new Exception("Minorista no encontrado");
+            }
+            MinoristaProfile.ToMinoristaUpdate(minoristaEntity, minorista);
+            _minoristaRepository.UpdateMinorista(minoristaEntity);
+            return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
+        }
+
+        public MinoristaResponse DeleteMinorista(int id)
+        {
+            var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
+            if ( minoristaEntity == null )
+            {
+                throw new Exception("Minorista no encontrado");
+            }
+            _minoristaRepository.DeleteMinorista(minoristaEntity);
+            return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
         }
     }
 }

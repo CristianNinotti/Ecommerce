@@ -1,6 +1,8 @@
 using Application.Interfaces;
 using Application.Services;
+using Domain.Interfaces;
 using Infraestructure.Context;
+using Infraestructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,10 +16,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<EcommerceDbContext>(dbContextOptions => dbContextOptions.UseSqlite(
     builder.Configuration["ConnectionStrings:DBConnectionString"]));
-
+builder.Services.AddScoped<IMinoristaRepository, MinoristaRepository>();
 builder.Services.AddScoped<IMinoristaService, MinoristaService>();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
