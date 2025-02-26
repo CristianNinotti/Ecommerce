@@ -26,7 +26,7 @@ namespace Infraestructure.Data
 
         public Minorista? GetMinoristaById(int id)
         {
-            return _minorista.Minoristas.AsTracking().FirstOrDefault(m => m.Id == id);
+            return _minorista.Minoristas.FirstOrDefault(m => m.Id == id);
         }
 
         public void CreateMinorista (Minorista minorista)

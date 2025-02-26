@@ -18,6 +18,8 @@ builder.Services.AddDbContext<EcommerceDbContext>(dbContextOptions => dbContextO
     builder.Configuration["ConnectionStrings:DBConnectionString"]));
 builder.Services.AddScoped<IMinoristaRepository, MinoristaRepository>();
 builder.Services.AddScoped<IMinoristaService, MinoristaService>();
+builder.Services.AddScoped<IMayoristaRepository, MayoristaRepository>();
+builder.Services.AddScoped<IMayoristaService, MayoristaService>();
 
 var app = builder.Build();
 

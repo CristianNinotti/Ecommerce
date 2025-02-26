@@ -10,6 +10,7 @@ namespace Infraestructure.Context
     {
         public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options) { }
         public DbSet<Minorista> Minoristas { get; set; }
+        public DbSet<Mayorista> Mayoristas { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
        // {
