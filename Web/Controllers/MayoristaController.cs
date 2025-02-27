@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("All Mayoristas")]
+        [Authorize(Policy = "MayoristaOnly")]
         public IActionResult GetAllMayoristas()
         {
             return Ok(_mayoristaService.GetAllMayoristas());

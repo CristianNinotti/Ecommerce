@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace Web.Controllers
             _minoristaService = minoristaService;
         }
         [HttpGet("All Minorista")]
+        [Authorize(Policy = "MinoristaOnly")]
         public IActionResult GetAllMinoristas()
         {
             return Ok(_minoristaService.GetAllMinorista());
