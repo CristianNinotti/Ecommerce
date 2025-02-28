@@ -12,6 +12,8 @@ namespace Infraestructure.Context
         public DbSet<Minorista> Minoristas { get; set; }
         public DbSet<Mayorista> Mayoristas { get; set; }
 
+        public DbSet<SuperAdmin> SuperAdmins { get; set; }
+
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
        // {
        //     base.OnModelCreating(modelBuilder);

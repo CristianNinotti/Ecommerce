@@ -15,18 +15,18 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly IMayoristaRepository _mayoristaRepository;
     private readonly IMinoristaRepository _minoristaRepository;
-    //private readonly ISuperAdminRepository _superAdminRepository;
+    private readonly ISuperAdminRepository _superAdminRepository;
     private readonly AuthenticationServiceOptions _options;
 
     public AuthenticationService(
         IMayoristaRepository mayoristaRepository,
         IMinoristaRepository minoristaRepository,
-        //ISuperAdminRepository superAdminRepository,
+        ISuperAdminRepository superAdminRepository,
         IOptions<AuthenticationServiceOptions> options)
     {
         _mayoristaRepository = mayoristaRepository;
         _minoristaRepository = minoristaRepository;
-        //_superAdminRepository = superAdminRepository;
+        _superAdminRepository = superAdminRepository;
         _options = options.Value;
     }
 
@@ -55,12 +55,12 @@ public class AuthenticationService : IAuthenticationService
             return user;
 
 
-        /*   var superAdmins = _superAdminRepository.GetAllSuperAdmins();
-           user = superAdmins.FirstOrDefault(x =>
-               x.UserName.Equals(authenticationRequest.UserName) &&
+        var superAdmins = _superAdminRepository.GetAllSuperAdmins();
+        user = superAdmins.FirstOrDefault(x =>
+               x.NameAccount.Equals(authenticationRequest.NameAccount) &&
                x.Password.Equals(authenticationRequest.Password));
 
-         */
+         
         return user;
     }
 

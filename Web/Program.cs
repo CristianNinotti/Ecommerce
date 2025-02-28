@@ -4,6 +4,7 @@ using Application.Services;
 using Domain.Interfaces;
 using Infraestructure.Context;
 using Infraestructure.Data;
+using Infrastructure.Data;
 using Infrastructure.ThirdServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -105,6 +106,10 @@ builder.Services.AddScoped<IMinoristaRepository, MinoristaRepository>();
 builder.Services.AddScoped<IMinoristaService, MinoristaService>();
 builder.Services.AddScoped<IMayoristaRepository, MayoristaRepository>();
 builder.Services.AddScoped<IMayoristaService, MayoristaService>();
+builder.Services.AddScoped<ISuperAdminService, SuperAdminService>();
+builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
+
+
 
 var app = builder.Build();
 
