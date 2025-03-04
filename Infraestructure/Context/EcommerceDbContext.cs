@@ -13,6 +13,7 @@ namespace Infraestructure.Context
         public DbSet<Mayorista> Mayoristas { get; set; }
 
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
        // {

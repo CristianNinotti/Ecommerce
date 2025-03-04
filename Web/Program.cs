@@ -108,7 +108,8 @@ builder.Services.AddScoped<IMayoristaRepository, MayoristaRepository>();
 builder.Services.AddScoped<IMayoristaService, MayoristaService>();
 builder.Services.AddScoped<ISuperAdminService, SuperAdminService>();
 builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
-
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 
 var app = builder.Build();

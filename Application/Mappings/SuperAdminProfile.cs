@@ -1,14 +1,14 @@
 ﻿using Application.Models.Request;
 using Application.Models.Response;
-using DomainEntity = Domain.Entities;
+using Domain.Entities;
 
 namespace Application.Mappings
 {
     public static class SuperAdminProfile
     {
-        public static DomainEntity.SuperAdmin ToSuperAdminEntity(SuperAdminRequest request)
+        public static SuperAdmin ToSuperAdminEntity(SuperAdminRequest request)
         {
-            return new DomainEntity.SuperAdmin()
+            return new SuperAdmin()
             {
                 NameAccount = request.NameAccount,
                 Password = request.Password,
@@ -22,7 +22,7 @@ namespace Application.Mappings
 
 
 
-        public static SuperAdminResponse ToSuperAdminResponse(DomainEntity.SuperAdmin superAdmin)
+        public static SuperAdminResponse ToSuperAdminResponse(SuperAdmin superAdmin)
         {
             return new SuperAdminResponse()
             {
@@ -35,7 +35,7 @@ namespace Application.Mappings
             };
         }
 
-        public static List<SuperAdminResponse> ToSuperAdminResponse(List<DomainEntity.SuperAdmin> superAdmins)
+        public static List<SuperAdminResponse> ToSuperAdminResponse(List<SuperAdmin> superAdmins)
         {
             return superAdmins.Select(c => new SuperAdminResponse
             {

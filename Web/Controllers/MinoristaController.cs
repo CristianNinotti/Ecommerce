@@ -19,19 +19,21 @@ namespace Web.Controllers
             _minoristaService = minoristaService;
         }
         [HttpGet("All Minorista")]
-        [Authorize(Policy = "MinoristaOnly")]
+        [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult GetAllMinoristas()
         {
             return Ok(_minoristaService.GetAllMinorista());
 
         }
         [HttpPost("Create Minorista")]
+        [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult CreateMinorista([FromBody] MinoristaRequest minorista)
         {
             _minoristaService.CreateMinorista(minorista);
             return Ok("Usuario Creado");
         }
         [HttpPut("UpdateMinorista/{id}")]
+        [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult UpdateMinorista([FromRoute] int id, MinoristaRequest minorista)
         {
             try
@@ -45,6 +47,7 @@ namespace Web.Controllers
             }
         }
         [HttpDelete("DeleteMinorista/{id}")]
+        [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult DeleteMinorista([FromRoute] int id)
         {
             try

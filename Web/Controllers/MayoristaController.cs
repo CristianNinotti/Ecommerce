@@ -18,13 +18,14 @@ namespace Web.Controllers
         }
 
         [HttpGet("All Mayoristas")]
-        [Authorize(Policy = "MayoristaOnly")]
+        [Authorize(Policy = "MayoristaOrSuperAdmin")]
         public IActionResult GetAllMayoristas()
         {
             return Ok(_mayoristaService.GetAllMayoristas());
         }
 
         [HttpPost("Create Mayorista")]
+        [Authorize(Policy = "MayoristaOrSuperAdmin")]
         public IActionResult CreateMayorista([FromBody] MayoristaRequest mayorista)
         {
             _mayoristaService.CreateMayorista(mayorista);
@@ -32,6 +33,7 @@ namespace Web.Controllers
         }
 
         [HttpPut("UpdateMayorista/{id}")]
+        [Authorize(Policy = "MayoristaOrSuperAdmin")]
 
         public IActionResult UpdateMayorista([FromRoute]int id, MayoristaRequest mayorista)
         {
@@ -47,6 +49,7 @@ namespace Web.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [Authorize(Policy = "MayoristaOrSuperAdmin")]
         public IActionResult DeleteMayorista([FromRoute]int id)
         {
             try
