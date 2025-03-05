@@ -18,7 +18,7 @@ namespace Web.Controllers
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult GetAllProducts()
         {
-            var products = _productService.GetAllProductsService();
+            var products = _productService.GetAllProducts();
             return Ok(products);
         }
         [HttpGet("ProductById/{id}")]
@@ -27,7 +27,7 @@ namespace Web.Controllers
         {
             try
             {
-                var product = _productService.GetProductByIdService(id);
+                var product = _productService.GetProductById(id);
                 return Ok(product);
             }
             catch (Exception ex)
@@ -39,7 +39,7 @@ namespace Web.Controllers
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult CreateProduct([FromBody] ProductRequest product)
         {
-            _productService.CreateProductService(product);
+            _productService.CreateProduct(product);
             return Ok("Producto Creado");
         }
         [HttpPut("UpdateProduct/{id}")]
@@ -48,7 +48,7 @@ namespace Web.Controllers
         {
             try
             {
-                var UpdatedProduct = _productService.ToUpdateProductService(id, product);
+                var UpdatedProduct = _productService.ToUpdateProduct(id, product);
                 return Ok(UpdatedProduct);
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace Web.Controllers
         {
             try
             {
-                _productService.DeleteProductService(id);
+                _productService.DeleteProduct(id);
                 return Ok("Producto Eliminado");
             }
             catch (Exception ex)

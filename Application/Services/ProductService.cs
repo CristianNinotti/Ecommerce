@@ -15,7 +15,7 @@ namespace Application.Services
         {
             _productRepository = productRepository;
         }
-        public List<ProductResponse> GetAllProductsService()
+        public List<ProductResponse> GetAllProducts()
         {
             var products = _productRepository.GetAllProductsRepository();
             return ProductProfile.ToProductResponse(products);
@@ -31,13 +31,13 @@ namespace Application.Services
             return null;
         }
 
-        public ProductResponse CreateProductService(ProductRequest product)
+        public ProductResponse CreateProduct(ProductRequest product)
         {
             var productEntity = ProductProfile.ToProductEntity(product);
             _productRepository.CreateProductRepository(productEntity);
             return ProductProfile.ToProductResponse(productEntity);
         }
-        public ProductResponse ToUpdateProductService(int id, ProductRequest request)
+        public ProductResponse ToUpdateProduct(int id, ProductRequest request)
         {
             var productEntity = _productRepository.GetProductByIdRepository(id);
             if (productEntity == null)
@@ -48,7 +48,7 @@ namespace Application.Services
             _productRepository.UpdateProductRepository(productEntity);
             return ProductProfile.ToProductResponse(productEntity);
         }
-        public ProductResponse DeleteProductService(int id)
+        public ProductResponse DeleteProduct(int id)
         {
             var productEntity = _productRepository.GetProductByIdRepository(id);
             if (productEntity == null)

@@ -5,10 +5,10 @@ namespace Application.Interfaces
 {
     public interface IProductService
     {
-        List<ProductResponse> GetAllProductsService();
-        ProductResponse GetProductByIdService(int id);
-        ProductResponse CreateProductService(ProductRequest product);
-        ProductResponse ToUpdateProductService(int id, ProductRequest product);
-        ProductResponse DeleteProductService(int id);
+        List<ProductResponse> GetAllProducts();
+        ProductResponse? GetProductById(int id);
+        ProductResponse CreateProduct(ProductRequest product);
+        ProductResponse ToUpdateProduct(int id, ProductRequest product);
+        ProductResponse DeleteProduct(int id);
     }
 }
