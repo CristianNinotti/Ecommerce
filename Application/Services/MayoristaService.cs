@@ -21,16 +21,20 @@ namespace Application.Services
             _mayoristaRepository = mayoristaRepository;
         }
 
-        public List<Mayorista> GetAllMayoristas()
+        public List<MayoristaResponse> GetAllMayoristas()
         {
             var mayoristas = _mayoristaRepository.GetMayoristas();
-            return mayoristas.ToList();
+            return mayoristas.Select(MayoristaProfile.ToMayoristaResponse).ToList();
         }
 
-        public MayoristaResponse GetMayoristaById(int id)
+        public MayoristaResponse? GetMayoristaById(int id)
         {
             var mayorista = _mayoristaRepository.GetMayoristaById (id);
-            return MayoristaProfile.ToMayoristaResponse(mayorista);
+            if (mayorista != null)
+            {
+                return MayoristaProfile.ToMayoristaResponse(mayorista);
+            }
+            return null;
         }
 
         public MayoristaResponse CreateMayorista(MayoristaRequest mayorista)

@@ -20,8 +20,6 @@ namespace Application.Mappings
             };
         }
 
-
-
         public static SuperAdminResponse ToSuperAdminResponse(SuperAdmin superAdmin)
         {
             return new SuperAdminResponse()
@@ -44,9 +42,23 @@ namespace Application.Mappings
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 Dni = c.Dni,
-                Email = c.Email
+                Email = c.Email,
+                PhoneNumber = c.PhoneNumber,
+                Address = c.Address
 
             }).ToList();
+        }
+
+        public static void ToSuperAdminUpdate(SuperAdmin superAdmin, SuperAdminRequest request)
+        {
+            superAdmin.FirstName = request.FirstName;
+            superAdmin.LastName = request.LastName;
+            superAdmin.NameAccount = request.NameAccount;
+            superAdmin.Password = request.Password;
+            superAdmin.Email = request.Email;
+            superAdmin.Dni = request.Dni;
+            superAdmin.PhoneNumber = request.PhoneNumber;
+            superAdmin.Address = request.Address;
         }
     }
 }

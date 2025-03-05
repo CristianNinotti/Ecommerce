@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Controllers

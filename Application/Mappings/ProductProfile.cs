@@ -1,10 +1,5 @@
-﻿using System;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Application.Models.Request;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Application.Models.Response;
 
 namespace Application.Mappings
@@ -34,6 +29,20 @@ namespace Application.Mappings
                 Photos = product.Photos,
                 CategoryId = product.CategoryId,
             };
+        }
+        public static List<ProductResponse> ToProductResponse(List<Product> product)
+        {
+            return product.Select(c => new ProductResponse
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                Price = c.Price,
+                Stock = c.Stock,
+                Photos = c.Photos,
+                CategoryId = c.CategoryId,
+
+            }).ToList();
         }
         public static void ToProductUpdate (Product product, ProductRequest request )
         {

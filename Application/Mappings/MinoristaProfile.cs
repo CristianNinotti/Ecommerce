@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Models.Request;
+﻿using Application.Models.Request;
 using Application.Models.Response;
 using Domain.Entities;
 
 namespace Application.Mappings
 {
-   public static class MinoristaProfile
+    public static class MinoristaProfile
     {
         public static Minorista ToMinoristaEntity(MinoristaRequest minorista)
         {
@@ -45,6 +40,23 @@ namespace Application.Mappings
                 Address = minorista.Address,
             };
         }
+
+        public static List<MinoristaResponse> ToMinoristaResponse(List<Minorista> minorista)
+        {
+            return minorista.Select(c => new MinoristaResponse
+            {
+                NameAccount = c.NameAccount,
+                Id = c.Id,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                Dni = c.Dni,
+                Email = c.Email,
+                PhoneNumber = c.PhoneNumber,
+                Address = c.Address
+
+            }).ToList();
+        }
+
 
         public static void ToMinoristaUpdate (Minorista minorista, MinoristaRequest request)
         {

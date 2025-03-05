@@ -1,11 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Web.Controllers
 {

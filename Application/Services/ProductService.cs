@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Interfaces;
-using Domain.Entities;
+﻿using Domain.Interfaces;
 using Application.Mappings;
 using Application.Models.Response;
 using Application.Models.Request;
 using Application.Interfaces;
+using Domain.Entities;
 
 namespace Application.Services
 {
@@ -20,16 +15,20 @@ namespace Application.Services
         {
             _productRepository = productRepository;
         }
-        public List<Product> GetAllProductsService()
+        public List<ProductResponse> GetAllProductsService()
         {
             var products = _productRepository.GetAllProductsRepository();
-            return products.ToList();
+            return ProductProfile.ToProductResponse(products);
         }
 
-        public ProductResponse GetProductByIdService(int id)
+        public ProductResponse? GetProductById(int id)
         {
             var product = _productRepository.GetProductByIdRepository(id);
-            return ProductProfile.ToProductResponse(product);
+            if (product != null)
+            {
+                return ProductProfile.ToProductResponse(product);
+            }
+            return null;
         }
 
         public ProductResponse CreateProductService(ProductRequest product)

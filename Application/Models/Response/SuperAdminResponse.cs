@@ -1,11 +1,4 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.Models.Response
+﻿namespace Application.Models.Response
 {
     public class SuperAdminResponse
     {
@@ -15,6 +8,7 @@ namespace Application.Models.Response
         public string LastName { get; set; } = string.Empty;
         public int Dni { get; set; }
         public string Email { get; set; } = string.Empty;
-
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
     }
 }

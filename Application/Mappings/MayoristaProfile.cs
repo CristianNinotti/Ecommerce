@@ -1,9 +1,4 @@
 ﻿using Application.Models.Request;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain.Entities;
 using Application.Models.Response;
 
@@ -46,6 +41,22 @@ namespace Application.Mappings
                 PhoneNumber = response.PhoneNumber,
                 Address = response.Address,
             };
+        }
+
+        public static List<MayoristaResponse> ToMayoristaResponse(List<Mayorista> mayorista)
+        {
+            return mayorista.Select(c => new MayoristaResponse
+            {
+                NameAccount = c.NameAccount,
+                Id = c.Id,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                Dni = c.Dni,
+                Email = c.Email,
+                PhoneNumber = c.PhoneNumber,
+                Address = c.Address
+
+            }).ToList();
         }
 
         public static void ToMayoristaUpdate (Mayorista mayorista, MayoristaRequest request)

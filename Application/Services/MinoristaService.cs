@@ -4,11 +4,6 @@ using Application.Models.Request;
 using Application.Models.Response;
 using Domain.Entities;
 using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -20,26 +15,30 @@ namespace Application.Services
         {
             _minoristaRepository = minoristaRepository;
         }
-        public List<Minorista> GetAllMinorista()
+        public List<MinoristaResponse> GetAllMinorista()
         {
             var minoristas = _minoristaRepository.GetAllMinoristas();
-            return minoristas.ToList();
+            return minoristas.Select(MinoristaProfile.ToMinoristaResponse).ToList();
         }
 
-        public MinoristaResponse GetMinoristaById(int id)
+        public MinoristaResponse? GetMinoristaById(int id)
         {
             var minorista = _minoristaRepository.GetMinoristaById(id);
-            return MinoristaProfile.ToMinoristaResponse(minorista);
+            if (minorista != null)
+            {
+                return MinoristaProfile.ToMinoristaResponse(minorista);
+            }
+            return null;
         }
 
-        public MinoristaResponse CreateMinorista(MinoristaRequest minorista)
+        public MinoristaResponse CreateMinorista(MinoristaRequest minorista) // Sustituir Minorista Response - Void
         {
             var minoristaEntity = MinoristaProfile.ToMinoristaEntity(minorista);
             _minoristaRepository.CreateMinorista(minoristaEntity);
             return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
         }
 
-        public MinoristaResponse UpdateMinorista(int id, MinoristaRequest minorista)
+        public MinoristaResponse UpdateMinorista(int id, MinoristaRequest minorista) // Sustituir Minorista Response - Bool
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
             if (minoristaEntity == null) 
@@ -51,7 +50,7 @@ namespace Application.Services
             return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
         }
 
-        public MinoristaResponse DeleteMinorista(int id)
+        public MinoristaResponse DeleteMinorista(int id)                        // Sustituir Minorista Response - Bool
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
             if ( minoristaEntity == null )

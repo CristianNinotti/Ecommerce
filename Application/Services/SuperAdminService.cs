@@ -17,16 +17,8 @@ namespace Application.Services
 
         public List<SuperAdminResponse> GetAllSuperAdmins()
         {
-            try
-            {
                 var superAdmins = _superAdminRepository.GetAllSuperAdmins();
                 return SuperAdminProfile.ToSuperAdminResponse(superAdmins);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Hay un error en la clase");
-                throw new Exception(e.Message);
-            }
         }
 
         public SuperAdminResponse? GetSuperAdminById(int id)
