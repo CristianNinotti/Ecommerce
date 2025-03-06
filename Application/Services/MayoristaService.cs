@@ -24,7 +24,7 @@ namespace Application.Services
         public List<MayoristaResponse> GetAllMayoristas()
         {
             var mayoristas = _mayoristaRepository.GetMayoristas();
-            return mayoristas.Select(MayoristaProfile.ToMayoristaResponse).ToList();
+            return MayoristaProfile.ToMayoristaResponse(mayoristas);
         }
 
         public MayoristaResponse? GetMayoristaById(int id)
@@ -37,34 +37,33 @@ namespace Application.Services
             return null;
         }
 
-        public MayoristaResponse CreateMayorista(MayoristaRequest mayorista)
+        public void CreateMayorista(MayoristaRequest mayorista)
         {
             var MayoristaEntity = MayoristaProfile.ToMayoristaEntity(mayorista);
             _mayoristaRepository.CreateMayorista(MayoristaEntity);
-            return MayoristaProfile.ToMayoristaResponse(MayoristaEntity);
         }
 
-        public MayoristaResponse UpdateMayorista(int id, MayoristaRequest mayorista)
+        public bool UpdateMayorista(int id, MayoristaRequest mayorista)
         {
             var MayoristaEntity = _mayoristaRepository.GetMayoristaById(id);
             if (MayoristaEntity == null)
             {
-                throw new Exception("Mayorista no encontrado");
+                return false;
             }
             MayoristaProfile.ToMayoristaUpdate(MayoristaEntity, mayorista);
             _mayoristaRepository.UpdateMayorista(MayoristaEntity);
-            return MayoristaProfile.ToMayoristaResponse(MayoristaEntity);
+            return true;
         }
 
-        public MayoristaResponse DeleteMayorista(int id)
+        public bool DeleteMayorista(int id)
         {
             var MayoristaEntity = _mayoristaRepository.GetMayoristaById(id);
             if (MayoristaEntity == null)
             {
-                throw new Exception("Mayorista no encontrado");
+                return false;
             }
             _mayoristaRepository.DeleteMayorista(MayoristaEntity);
-            return MayoristaProfile.ToMayoristaResponse(MayoristaEntity);
+            return true;
         }
     }
 }

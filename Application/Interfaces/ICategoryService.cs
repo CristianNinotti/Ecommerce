@@ -7,11 +7,8 @@ namespace Application.Interfaces
     {
         List<CategoryResponse> GetAllCategories();
         CategoryResponse? GetCategoryById(int id);
-        CategoryResponse CreateCategory(CategoryRequest category);
-        CategoryResponse UpdateCategory(int id, CategoryRequest category);
-        CategoryResponse DeleteCategory(int id);
-
-
-        
+        void CreateCategory(CategoryRequest category);
+        bool UpdateCategory(int id, CategoryRequest category);
+        bool DeleteCategory(int id);
     }
 }

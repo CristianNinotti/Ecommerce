@@ -18,7 +18,7 @@ namespace Application.Services
         public List<MinoristaResponse> GetAllMinorista()
         {
             var minoristas = _minoristaRepository.GetAllMinoristas();
-            return minoristas.Select(MinoristaProfile.ToMinoristaResponse).ToList();
+            return MinoristaProfile.ToMinoristaResponse(minoristas);
         }
 
         public MinoristaResponse? GetMinoristaById(int id)
@@ -31,34 +31,33 @@ namespace Application.Services
             return null;
         }
 
-        public MinoristaResponse CreateMinorista(MinoristaRequest minorista) // Sustituir Minorista Response - Void
+        public void CreateMinorista(MinoristaRequest minorista) // Sustituir Minorista Response - Void
         {
             var minoristaEntity = MinoristaProfile.ToMinoristaEntity(minorista);
             _minoristaRepository.CreateMinorista(minoristaEntity);
-            return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
         }
 
-        public MinoristaResponse UpdateMinorista(int id, MinoristaRequest minorista) // Sustituir Minorista Response - Bool
+        public bool UpdateMinorista(int id, MinoristaRequest minorista) // Sustituir Minorista Response - Bool
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
             if (minoristaEntity == null) 
             {
-                throw new Exception("Minorista no encontrado");
+                return false;
             }
             MinoristaProfile.ToMinoristaUpdate(minoristaEntity, minorista);
             _minoristaRepository.UpdateMinorista(minoristaEntity);
-            return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
+            return true;
         }
 
-        public MinoristaResponse DeleteMinorista(int id)                        // Sustituir Minorista Response - Bool
+        public bool DeleteMinorista(int id)                        // Sustituir Minorista Response - Bool
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
             if ( minoristaEntity == null )
             {
-                throw new Exception("Minorista no encontrado");
+                return false;
             }
             _minoristaRepository.DeleteMinorista(minoristaEntity);
-            return MinoristaProfile.ToMinoristaResponse(minoristaEntity);
+            return true;
         }
     }
 }

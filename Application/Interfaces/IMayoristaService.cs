@@ -7,8 +7,8 @@ namespace Application.Interfaces
     {
         List<MayoristaResponse> GetAllMayoristas();
         MayoristaResponse? GetMayoristaById(int id);
-        MayoristaResponse CreateMayorista(MayoristaRequest request);
-        MayoristaResponse UpdateMayorista(int id, MayoristaRequest request);
-        MayoristaResponse DeleteMayorista(int id);
+        void CreateMayorista(MayoristaRequest request);
+        bool UpdateMayorista(int id, MayoristaRequest request);
+        bool DeleteMayorista(int id);
     }
 }

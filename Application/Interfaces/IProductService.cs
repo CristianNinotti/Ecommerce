@@ -7,8 +7,8 @@ namespace Application.Interfaces
     {
         List<ProductResponse> GetAllProducts();
         ProductResponse? GetProductById(int id);
-        ProductResponse CreateProduct(ProductRequest product);
-        ProductResponse ToUpdateProduct(int id, ProductRequest product);
-        ProductResponse DeleteProduct(int id);
+        void CreateProduct(ProductRequest product);
+        bool ToUpdateProduct(int id, ProductRequest product);
+        bool DeleteProduct(int id);
     }
 }

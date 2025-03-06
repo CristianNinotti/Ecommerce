@@ -45,41 +45,20 @@ namespace Application.Services
 
             if (superAdminEntity != null)
             {
-
-                if (!string.IsNullOrEmpty(superAdmin.NameAccount) && superAdmin.NameAccount != "string")
+                if (!string.IsNullOrEmpty(superAdmin.NameAccount) && superAdmin.NameAccount != "string" && !string.IsNullOrEmpty(superAdmin.Password) && superAdmin.Password != "string" &&
+                    !string.IsNullOrEmpty(superAdmin.Password) && superAdmin.Password != "string" && !string.IsNullOrEmpty(superAdmin.FirstName) && superAdmin.FirstName != "string" &&
+                    !string.IsNullOrEmpty(superAdmin.LastName) && superAdmin.LastName != "string" && superAdmin.Dni != 0  && !string.IsNullOrEmpty(superAdmin.Email) && superAdmin.Email != "string")
                 {
                     superAdminEntity.NameAccount = superAdmin.NameAccount;
-                }
-
-                if (!string.IsNullOrEmpty(superAdmin.Password) && superAdmin.Password != "string")
-                {
                     superAdminEntity.Password = superAdmin.Password;
-                }
-
-                if (!string.IsNullOrEmpty(superAdmin.FirstName) && superAdmin.FirstName != "string")
-                {
                     superAdminEntity.FirstName = superAdmin.FirstName;
-                }
-
-                if (!string.IsNullOrEmpty(superAdmin.LastName) && superAdmin.LastName != "string")
-                {
                     superAdminEntity.LastName = superAdmin.LastName;
-                }
-
-                if (superAdmin.Dni != 0)
-                {
                     superAdminEntity.Dni = superAdmin.Dni;
-                }
-
-                if (!string.IsNullOrEmpty(superAdmin.Email) && superAdmin.Email != "string")
-                {
                     superAdminEntity.Email = superAdmin.Email;
+                    _superAdminRepository.UpdateSuperAdmin(superAdminEntity);
+                    return true;
                 }
-                _superAdminRepository.UpdateSuperAdmin(superAdminEntity);
-
-                return true;
             }
-
             return false;
         }
 

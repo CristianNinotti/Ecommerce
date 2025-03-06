@@ -31,32 +31,31 @@ namespace Application.Services
             return null;
         }
 
-        public ProductResponse CreateProduct(ProductRequest product)
+        public void CreateProduct(ProductRequest product)
         {
             var productEntity = ProductProfile.ToProductEntity(product);
             _productRepository.CreateProductRepository(productEntity);
-            return ProductProfile.ToProductResponse(productEntity);
         }
-        public ProductResponse ToUpdateProduct(int id, ProductRequest request)
+        public bool ToUpdateProduct(int id, ProductRequest request)
         {
             var productEntity = _productRepository.GetProductByIdRepository(id);
             if (productEntity == null)
                 {
-                    throw new Exception("Producto no encontrado");
+                return false;
                 }
             ProductProfile.ToProductUpdate(productEntity, request);
             _productRepository.UpdateProductRepository(productEntity);
-            return ProductProfile.ToProductResponse(productEntity);
+            return true;
         }
-        public ProductResponse DeleteProduct(int id)
+        public bool DeleteProduct(int id)
         {
             var productEntity = _productRepository.GetProductByIdRepository(id);
             if (productEntity == null)
             {
-                throw new Exception("Producto no encontrado");
+                return false;
             }
             _productRepository.DeleteProductRepository(productEntity);
-            return ProductProfile.ToProductResponse(productEntity);
+            return true;
         }
     }
 }

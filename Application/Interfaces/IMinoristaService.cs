@@ -8,9 +8,9 @@ namespace Application.Interfaces
     {
     List<MinoristaResponse> GetAllMinorista();
     MinoristaResponse? GetMinoristaById(int id);
-    MinoristaResponse CreateMinorista(MinoristaRequest minorista); // Void - Sustituir Minorista response
-    MinoristaResponse UpdateMinorista(int id, MinoristaRequest minorista); //Bool - Sustituir Minorista response
-    MinoristaResponse DeleteMinorista(int id); //Bool - Sustituir Minorista response
+    void CreateMinorista(MinoristaRequest minorista);
+    bool UpdateMinorista(int id, MinoristaRequest minorista);
+    bool DeleteMinorista(int id);
 
     }
 }
