@@ -100,18 +100,28 @@ builder.Services.AddAuthentication("Bearer")
         });
 
 
-// Configuración de servicios de aplicación e infraestructura
+//Servicios de terceros
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IMinoristaRepository, MinoristaRepository>();
+
+// Configuración de servicios de aplicación e infraestructura
+#region
 builder.Services.AddScoped<IMinoristaService, MinoristaService>();
-builder.Services.AddScoped<IMayoristaRepository, MayoristaRepository>();
 builder.Services.AddScoped<IMayoristaService, MayoristaService>();
 builder.Services.AddScoped<ISuperAdminService, SuperAdminService>();
-builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+#endregion
+
+// Configuración de repositorios de aplicación e infraestructura
+#region
+builder.Services.AddScoped<IMinoristaRepository, MinoristaRepository>();
+builder.Services.AddScoped<IMayoristaRepository, MayoristaRepository>();
+builder.Services.AddScoped<ISuperAdminRepository, SuperAdminRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+#endregion
 
 
 var app = builder.Build();
