@@ -1,8 +1,6 @@
-﻿using Application.Services;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Domain.Interfaces;
 using Application.Models.Response;
 using Application.Models.Request;
 
@@ -13,10 +11,12 @@ namespace Web.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IProductService productService)
         {
             _categoryService = categoryService;
+            _productService = productService;
         }
 
         [HttpGet("All Categories")]
@@ -31,6 +31,17 @@ namespace Web.Controllers
         public ActionResult<CategoryResponse?> GetCategoryById([FromRoute] int id)
         {
             return Ok(_categoryService.GetCategoryById(id));
+        }
+        [HttpGet("CategoryWithProducts/{id}")]
+        [Authorize(Policy = "SuperAdminOnly")]
+        public ActionResult<ProductResponse?> GetAllProducts([FromRoute] int id)
+        {
+            // Filtra los productos por CategoryId
+            var productInCategory = _productService.GetAllProducts()
+                                                    .Where(m => m.CategoryId == id)  // Filtra los productos por CategoryId
+                                                    .ToList(); // Asegúrate de materializar la lista
+
+            return Ok(productInCategory);
         }
 
         [HttpPost("CreateCategory")]

@@ -14,10 +14,12 @@ namespace Application.Mappings
                 Description = product.Description,
                 Price = product.Price,
                 Stock = product.Stock,
+                CategoryId = product.CategoryId,
                 Photos = product.Photos,
+   
             };
         }
-        public static ProductResponse ToProductResponse (Product product)
+        public static ProductResponse ToProductResponse(Product product)
         {
             return new ProductResponse
             {
@@ -26,8 +28,9 @@ namespace Application.Mappings
                 Description = product.Description,
                 Price = product.Price,
                 Stock = product.Stock,
-                Photos = product.Photos,
                 CategoryId = product.CategoryId,
+                Photos = product.Photos,
+       
             };
         }
         public static List<ProductResponse> ToProductResponse(List<Product> product)
@@ -39,18 +42,21 @@ namespace Application.Mappings
                 Description = c.Description,
                 Price = c.Price,
                 Stock = c.Stock,
-                Photos = c.Photos,
                 CategoryId = c.CategoryId,
+                Photos = c.Photos,
+
 
             }).ToList();
         }
-        public static void ToProductUpdate (Product product, ProductRequest request )
+        public static void ToProductUpdate(Product product, ProductRequest request)
         {
             product.Name = request.Name;
             product.Description = request.Description;
             product.Price = request.Price;
             product.Stock = request.Stock;
+            product.CategoryId = product.CategoryId;
             product.Photos = request.Photos;
+
         }
     }
 }
