@@ -10,6 +10,9 @@
         public int CategoryId { get; set; }
         public List<string>? Photos { get; set; }
         public Category? Categoria { get; set; }
+
+        // Relación con OrderItem
+        public List<OrderItem> OrderItems { get; set; } = new(); // ⬅ Un producto puede estar en varios OrderItem
     }
 }
 

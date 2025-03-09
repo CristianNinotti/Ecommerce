@@ -3,16 +3,19 @@ using Application.Mappings;
 using Application.Models.Request;
 using Application.Models.Response;
 using Domain.Interfaces;
+using Domain.Entities;
 
 namespace Application.Services
 {
     public class OrderItemService : IOrderItemService
     {
         private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IProductRepository _productRepository; // Usamos IProductRepository directamente
 
-        public OrderItemService(IOrderItemRepository orderItemRepository)
+        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository)
         {
             _orderItemRepository = orderItemRepository;
+            _productRepository = productRepository; // Inicializamos el repositorio de productos
         }
 
         public List<OrderItemResponse> GetAllOrderItems()
@@ -33,9 +36,19 @@ namespace Application.Services
 
         public void CreateOrderItem(OrderItemRequest orderItem)
         {
-            var orderItemEntity = OrderItemProfile.ToOrderItemEntity(orderItem);
+            // Usamos el repositorio de productos para obtener el precio
+            var product = _productRepository.GetProductByIdRepository(orderItem.ProductId); // Obtener el producto por su ID
+            if (product == null)
+            {
+                throw new Exception("Producto no encontrado");
+            }
+
+            // Pasamos el precio del producto al crear el OrderItem
+            var orderItemEntity = OrderItemProfile.ToOrderItemEntity(orderItem, product.Price);
             _orderItemRepository.CreateOrderItemRepository(orderItemEntity);
         }
+
+
         public bool ToUpdateOrderItem(int id, OrderItemRequest request)
         {
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(id);
@@ -43,10 +56,20 @@ namespace Application.Services
             {
                 return false;
             }
-            OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request);
+
+            // Usamos el repositorio de productos para obtener el precio
+            var product = _productRepository.GetProductByIdRepository(request.ProductId);
+            if (product == null)
+            {
+                return false; // O lanzar una excepción si lo prefieres
+            }
+
+            // Pasamos el precio del producto al actualizar
+            OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);
             _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
             return true;
         }
+
 
         public bool DeleteOrderItem(int id)
         {
@@ -58,7 +81,5 @@ namespace Application.Services
             _orderItemRepository.DeleteOrderItemRepository(orderItemEntity);
             return true;
         }
-
-
     }
 }
