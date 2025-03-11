@@ -47,8 +47,12 @@ namespace Application.Services
                 throw new InvalidOperationException($"Stock insuficiente. Disponible: {product.Stock}");
             }
 
+            // Calculamos el TotalPrice aquí antes de crear el OrderItem
+            var totalPrice = orderItem.Quantity * product.Price;
+
             // Pasamos el precio del producto al crear el OrderItem
             var orderItemEntity = OrderItemProfile.ToOrderItemEntity(orderItem, product.Price);
+            orderItemEntity.TotalPrice = totalPrice; // Asignar TotalPrice antes de guardar
             _orderItemRepository.CreateOrderItemRepository(orderItemEntity);
         }
 
@@ -77,8 +81,12 @@ namespace Application.Services
                 throw new InvalidOperationException("Stock insuficiente para la cantidad solicitada.");
             }
 
+            // Calculamos el TotalPrice aquí con la nueva cantidad (request.Quantity)
+            var totalPrice = request.Quantity * product.Price;
+
             // Pasamos la nueva información al método de actualización
             OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);  // <-- Aca se pasa el precio del producto
+            orderItemEntity.TotalPrice = totalPrice; // Asignar TotalPrice aquí
             _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
             return true;
         }

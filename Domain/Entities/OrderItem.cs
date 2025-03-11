@@ -14,8 +14,7 @@ namespace Domain.Entities
         public int ProductId {  get; set; }
         public int Quantity {  get; set; }
         public decimal Price { get; set; }
-        public decimal TotalPrice => Quantity * Price; // Se calcula automáticamente
-
+        public decimal TotalPrice { get; set; }
         // Relación con Product
         public Product? Product { get; set; }
     }
