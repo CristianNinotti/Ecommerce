@@ -40,8 +40,15 @@ namespace Web.Controllers
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult CreateOrderItem([FromBody] OrderItemRequest orderItem)
         {
-            _orderItemService.CreateOrderItem(orderItem);
-            return Ok("Orden Creada");
+            try
+            {
+                _orderItemService.CreateOrderItem(orderItem);
+                return Ok("Orden Creada");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = "No hay stock suficiente para la cantidad solicitada. " + ex.Message }); // 400 Bad Request si no hay stock (Hace referencia a la validacion del servicio)
+            }
         }
         [HttpPut("UpdateOrderItem/{id}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
@@ -49,14 +56,25 @@ namespace Web.Controllers
         {
             try
             {
-                var UpdatedOrderItem = _orderItemService.ToUpdateOrderItem(id, orderItem);
-                return Ok(UpdatedOrderItem);
+                var updateSuccess = _orderItemService.ToUpdateOrderItem(id, orderItem);
+
+                // Verifica si la actualización fue exitosa
+                if (updateSuccess)
+                {
+                    return Ok("OrderItem actualizado correctamente.");
+                }
+                else
+                {
+                    return NotFound($"OrderItem con ID {id} no encontrada.");
+                }
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                return NotFound($"OrderItem con ID {id} no encontrada. Error: {ex.Message}");
+                // Capturamos específicamente errores relacionados con la validación de stock
+                return BadRequest($"No hay stock suficiente para la cantidad solicitada. Error: {ex.Message}");
             }
         }
+
         [HttpDelete("DeleteOrderItem/{id}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult DeleteOrderItem([FromRoute] int id)

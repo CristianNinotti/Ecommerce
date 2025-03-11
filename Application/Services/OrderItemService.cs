@@ -42,6 +42,10 @@ namespace Application.Services
             {
                 throw new Exception("Producto no encontrado");
             }
+            if (orderItem.Quantity > product.Stock)
+            {
+                throw new InvalidOperationException($"Stock insuficiente. Disponible: {product.Stock}");
+            }
 
             // Pasamos el precio del producto al crear el OrderItem
             var orderItemEntity = OrderItemProfile.ToOrderItemEntity(orderItem, product.Price);
@@ -57,18 +61,28 @@ namespace Application.Services
                 return false;
             }
 
-            // Usamos el repositorio de productos para obtener el precio
+            // Obtener el producto asociado para verificar stock y precio
             var product = _productRepository.GetProductByIdRepository(request.ProductId);
             if (product == null)
             {
                 return false; // O lanzar una excepción si lo prefieres
             }
 
-            // Pasamos el precio del producto al actualizar
-            OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);
+            // Calcular stock disponible (considerando el stock actual + lo que ya estaba reservado)
+            var stockDisponible = product.Stock + orderItemEntity.Quantity;
+
+            // Verificar si la cantidad solicitada supera el stock disponible
+            if (request.Quantity > stockDisponible)
+            {
+                throw new InvalidOperationException("Stock insuficiente para la cantidad solicitada.");
+            }
+
+            // Pasamos la nueva información al método de actualización
+            OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);  // <-- Aca se pasa el precio del producto
             _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
             return true;
         }
+
 
 
         public bool DeleteOrderItem(int id)
