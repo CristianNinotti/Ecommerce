@@ -51,8 +51,13 @@ namespace Application.Services
             // Aca se usa el nuevo metodo con IEnumerable de OrderItemRepository de Id que recorre toda la lista
             var orderItems = _orderItemRepository.GetOrderItemsByOrderIdRepository(order.Id);
 
+            var user = _mayoristaRepository.GetMayoristaById(orderRequest.UserId);
+
             // Sumamos los TotalPrice de los OrderItems ya existentes
-            order.TotalAmount = orderItems.Sum(oi => oi.TotalPrice);
+            var totalAmount = orderItems.Sum(oi => oi.TotalPrice);
+
+            // Si el usuario es Mayorista, aplicamos el descuento del 10%
+            order.TotalAmount = (user != null) ? totalAmount * 0.90m : totalAmount;
 
             // Actualizamos la orden con el TotalAmount calculado
             _orderRepository.UpdateOrderRepository(order);
@@ -70,7 +75,7 @@ namespace Application.Services
             // Paso 2: Verificar y actualizar los OrderItems (si es necesario)
             foreach (var orderItemRequest in request.OrderItems)
             {
-                // Asegúrate de que orderItemRequest tiene la propiedad Id
+                // Asegúrate de que orderItemRequest tiene la propiedad Id correcta
                 var orderItemEntity = orderEntity.OrderItems
                                                   .FirstOrDefault(oi => oi.Id == orderItemRequest.OrderId);
 
@@ -100,14 +105,21 @@ namespace Application.Services
                 }
             }
 
-            // Paso 3: Actualizar el TotalAmount de la orden, sumando el TotalPrice de todos los OrderItems
-            orderEntity.TotalAmount = orderEntity.OrderItems.Sum(oi => oi.TotalPrice);
+            // Paso 3: Obtener el usuario de la orden para verificar si es Mayorista
+            var user = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
 
-            // Paso 4: Actualizar la orden en la base de datos
+            // Paso 4: Calcular el total de la orden
+            var totalAmount = orderEntity.OrderItems.Sum(oi => oi.TotalPrice);
+
+            // Si el usuario es Mayorista, aplicar el 10% de descuento
+            orderEntity.TotalAmount = (user != null) ? totalAmount * 0.90m : totalAmount;
+
+            // Paso 5: Actualizar la orden en la base de datos
             _orderRepository.UpdateOrderRepository(orderEntity);
 
             return true; // Si todo va bien, devolvemos true
         }
+
 
 
         public bool DeleteOrder(int orderId)
