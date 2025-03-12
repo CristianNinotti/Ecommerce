@@ -12,6 +12,7 @@ namespace Application.Mappings
             {
                 OrderDate = DateTime.Now,
                 OrderStatus = true,
+                UserId = order.UserId,                  // Se asigna el UserId desde el request // VER
                 OrderItems = new List<OrderItem>(),
             };
         }
@@ -36,7 +37,12 @@ namespace Application.Mappings
             return orders.Select(ToOrderResponse).ToList(); // Reutilizamos el método anterior
         }
 
-        // Falta update
-
+        // Falta update // No estoy seguro que sea asi los response de arriba de OrderItem, lo dejo provisoriamente.
+        // Método para actualizar una entidad Order con un OrderRequest
+        public static void UpdateOrderEntity(Order order, OrderRequest orderRequest)
+        {
+            order.OrderStatus = orderRequest.OrderStatus;
+            // No se permite modificar: OrderDate, TotalAmount ni UserId.
+        }
     }
 }
