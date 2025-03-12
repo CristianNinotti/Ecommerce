@@ -14,7 +14,6 @@ namespace Application.Services
         private readonly IProductRepository _productRepository;
         private readonly IMayoristaRepository _mayoristaRepository;
 
-
         public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository, IMayoristaRepository mayoristaRepository)
         {
             _orderRepository = orderRepository;
@@ -41,27 +40,64 @@ namespace Application.Services
         // Método para crear una orden con sus items
         public void CreateOrder(OrderRequest orderRequest)
         {
-            // Convertimos el request en una entidad Order
-            var order = OrderProfile.ToOrderEntity(orderRequest);
+            // Primero, creamos la orden
+            var order = new Order
+            {
+                UserId = orderRequest.UserId,
+                OrderDate = DateTime.Now, // Asignamos la fecha de la orden
+                OrderStatus = orderRequest.OrderStatus
+            };
 
-            // Guardamos la orden en la base de datos para obtener su ID
+            // Guardamos la orden en la base de datos
             _orderRepository.CreateOrderRepository(order);
 
-            // Obtenemos los OrderItems asociados a esta orden (No en el individual)
-            // Aca se usa el nuevo metodo con IEnumerable de OrderItemRepository de Id que recorre toda la lista
-            var orderItems = _orderItemRepository.GetOrderItemsByOrderIdRepository(order.Id);
+            // Inicializamos una variable para el total de la orden
+            decimal totalAmount = 0;
 
-            var user = _mayoristaRepository.GetMayoristaById(orderRequest.UserId);
+            // Ahora, creamos los OrderItems y les asignamos el OrderId correspondiente
+            foreach (var orderItemRequest in orderRequest.OrderItems)
+            {
+                // Obtener el producto de la base de datos usando el ProductId
+                var product = _productRepository.GetProductByIdRepository(orderItemRequest.ProductId);
+                if (product == null)
+                {
+                    throw new Exception($"Producto con ID {orderItemRequest.ProductId} no encontrado.");
+                }
 
-            // Sumamos los TotalPrice de los OrderItems ya existentes
-            var totalAmount = orderItems.Sum(oi => oi.TotalPrice);
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,  // Asignamos el OrderId de la orden recién creada
+                    ProductId = orderItemRequest.ProductId,
+                    Quantity = orderItemRequest.Quantity,
+                    Price = product.Price,  // Asignamos el precio del producto desde la base de datos
+                    TotalPrice = orderItemRequest.Quantity * product.Price  // Calculamos el TotalPrice
+                };
+
+                // Guardamos el OrderItem en la base de datos
+                _orderItemRepository.CreateOrderItemRepository(orderItem);
+
+                // Sumamos el TotalPrice de este OrderItem al totalAmount de la orden
+                totalAmount += orderItem.TotalPrice;
+            }
+
+            // Ahora que tenemos el totalAmount, asignamos el valor a la orden
+            order.TotalAmount = totalAmount;
 
             // Si el usuario es Mayorista, aplicamos el descuento del 10%
-            order.TotalAmount = (user != null) ? totalAmount * 0.90m : totalAmount;
+            var user = _mayoristaRepository.GetMayoristaById(orderRequest.UserId);
+            if (user != null)
+            {
+                order.TotalAmount *= 0.90m; // Aplicamos el descuento
+            }
 
-            // Actualizamos la orden con el TotalAmount calculado
+            // Finalmente, actualizamos la orden con el total calculado
             _orderRepository.UpdateOrderRepository(order);
         }
+
+
+
+
+
 
         public bool ToUpdateOrder(int orderId, OrderRequest request)
         {

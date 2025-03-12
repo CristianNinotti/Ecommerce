@@ -17,7 +17,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("AllOrders")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
         public IActionResult GetAllOrders()
         {
             var orders = _orderService.GetAllOrders();
@@ -25,7 +25,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("OrderById/{id}")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+   
         public IActionResult OrderById([FromRoute] int id)
         {
             try
@@ -40,7 +40,7 @@ namespace Web.Controllers
         }
 
         [HttpPost("CreateOrder")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
         public IActionResult CreateOrder([FromBody] OrderRequest orderRequest)
         {
             try
@@ -55,7 +55,7 @@ namespace Web.Controllers
         }
 
         [HttpPut("UpdateOrder/{id}")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
         public IActionResult UpdateOrder([FromRoute] int id, OrderRequest orderRequest)
         {
             try
@@ -78,7 +78,7 @@ namespace Web.Controllers
         }
 
         [HttpDelete("DeleteOrder/{id}")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+  
         public IActionResult DeleteOrder([FromRoute] int id)
         {
             try

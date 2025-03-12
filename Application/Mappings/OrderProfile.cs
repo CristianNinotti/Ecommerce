@@ -12,8 +12,13 @@ namespace Application.Mappings
             {
                 OrderDate = DateTime.Now,
                 OrderStatus = true,
-                UserId = order.UserId,                  // Se asigna el UserId desde el request // VER
-                OrderItems = new List<OrderItem>(),
+                UserId = order.UserId,                  
+                OrderItems = order.OrderItems.Select(o => new OrderItem
+                {
+                    OrderId = o.OrderId,
+                    ProductId = o.ProductId,
+                    Quantity = o.Quantity,
+                }).ToList() // Creamos la lista de OrderItems
             };
         }
 

@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
 using Infraestructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
@@ -15,12 +16,24 @@ namespace Infrastructure.Data
 
         public List<Order> GetAllOrdersRepository()
         {
-            return _order.Orders.ToList();
+            return _order.Orders
+                .Include(o => o.OrderItems)
+                .Select(o => new Order
+                {
+                    Id = o.Id,
+                    OrderDate = o.OrderDate,
+                    TotalAmount = o.OrderItems.Sum(oi => oi.TotalPrice), // Calculamos aquí
+                    OrderStatus = o.OrderStatus,
+                    UserId = o.UserId,
+                    OrderItems = o.OrderItems
+                })
+                .ToList();
         }
+
 
         public Order? GetOrderByIdRepository(int id)
         {
-            return _order.Orders.FirstOrDefault(m => m.Id == id);
+            return _order.Orders.Include(o => o.OrderItems).FirstOrDefault(m => m.Id == id);
         }
 
         public void CreateOrderRepository(Order order)
