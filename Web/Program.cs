@@ -111,7 +111,7 @@ builder.Services.AddScoped<ISuperAdminService, SuperAdminService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
-builder.Services.AddScoped<IOrderService, OrderItemService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 #endregion
 
 // Configuración de repositorios de aplicación e infraestructura
