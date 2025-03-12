@@ -12,5 +12,6 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string TypeUser { get; set; } = string.Empty;
+        public List<Order> Orders { get; set; } = new List<Order>();
     }
 }

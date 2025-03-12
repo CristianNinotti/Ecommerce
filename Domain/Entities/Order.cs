@@ -9,8 +9,8 @@
 
         // Identificador del usuario (puede ser de cualquier tabla de cliente)
         public int UserId { get; set; }
+        public User? User { get; set; }
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-
 
     }
 }

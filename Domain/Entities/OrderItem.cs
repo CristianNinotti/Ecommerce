@@ -17,6 +17,7 @@ namespace Domain.Entities
         // Propiedad de navegación para acceder a la orden relacionada
         public Order? Order { get; set; }
 
+        // Clave foranea de Product //
         public int ProductId {  get; set; }
         public int Quantity {  get; set; }
         public decimal Price { get; set; }

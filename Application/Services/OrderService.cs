@@ -12,13 +12,15 @@ namespace Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IMayoristaRepository _mayoristaRepository;
 
 
-        public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository)
+        public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository, IMayoristaRepository mayoristaRepository)
         {
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository; // Inicializamos el repositorio de orderItems
             _productRepository = productRepository; // Inicializamos el repositorio de product tambien por el update.
+            _mayoristaRepository = mayoristaRepository; // Inicializamos el repositorio de mayorista para verificar si es el tipo de usuario y aplicar descuento.
         }
 
         public List<OrderResponse> GetAllOrders()
