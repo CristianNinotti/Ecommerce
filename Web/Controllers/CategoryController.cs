@@ -45,7 +45,6 @@ namespace Web.Controllers
         }
 
         [HttpPost("CreateCategory")]
-        [Authorize(Policy = "SuperAdminOnly")]
 
         public IActionResult CreateCategory([FromBody] CategoryRequest request)
         {

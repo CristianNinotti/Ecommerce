@@ -36,7 +36,6 @@ namespace Web.Controllers
             }
         }
         [HttpPost("Create Product")]
-        [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult CreateProduct([FromBody] ProductRequest product)
         {
             _productService.CreateProduct(product);

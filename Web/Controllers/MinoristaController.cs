@@ -22,7 +22,6 @@ namespace Web.Controllers
 
         }
         [HttpPost("Create Minorista")]
-        [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult CreateMinorista([FromBody] MinoristaRequest minorista)
         {
             _minoristaService.CreateMinorista(minorista);

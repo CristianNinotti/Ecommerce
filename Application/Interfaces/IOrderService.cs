@@ -8,7 +8,7 @@ namespace Application.Interfaces
         List<OrderResponse> GetAllOrders();
         OrderResponse? GetOrderById(int id);
         void CreateOrder(OrderRequest orderRequest);
-        bool ToUpdateOrder(int orderId, OrderRequest request);
+        bool ToUpdateOrder(int userId, int orderId, OrderRequest request);
         bool DeleteOrder(int orderId);
     }
 }

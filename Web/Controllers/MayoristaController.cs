@@ -24,7 +24,6 @@ namespace Web.Controllers
         }
 
         [HttpPost("Create Mayorista")]
-        [Authorize(Policy = "MayoristaOrSuperAdmin")]
         public IActionResult CreateMayorista([FromBody] MayoristaRequest mayorista)
         {
             _mayoristaService.CreateMayorista(mayorista);

@@ -17,6 +17,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("AllOrders")]
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
 
         public IActionResult GetAllOrders()
         {
@@ -25,7 +26,8 @@ namespace Web.Controllers
         }
 
         [HttpGet("OrderById/{id}")]
-   
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
         public IActionResult OrderById([FromRoute] int id)
         {
             try
@@ -54,13 +56,22 @@ namespace Web.Controllers
             }
         }
 
-        [HttpPut("UpdateOrder/{id}")]
+        [HttpPut("UpdateOrder/{orderId}")]
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
 
-        public IActionResult UpdateOrder([FromRoute] int id, OrderRequest orderRequest)
+        public IActionResult UpdateOrder([FromRoute] int orderId, [FromBody]  OrderRequest orderRequest)
         {
+            string? userIdClaim = User.FindFirst("Id")?.Value;
+
+            if (userIdClaim == null)
+            {
+                return BadRequest("No esta logueado");
+            }
+            int userId = int.Parse(userIdClaim);
+
             try
             {
-                var updateSuccess = _orderService.ToUpdateOrder(id, orderRequest);
+                var updateSuccess = _orderService.ToUpdateOrder(userId, orderId , orderRequest);
 
                 if (updateSuccess)
                 {
@@ -68,7 +79,7 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    return NotFound($"Orden con ID {id} no encontrada.");
+                    return NotFound($"Orden con ID {orderId} no encontrada.");
                 }
             }
             catch (InvalidOperationException ex)
@@ -78,7 +89,8 @@ namespace Web.Controllers
         }
 
         [HttpDelete("DeleteOrder/{id}")]
-  
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
         public IActionResult DeleteOrder([FromRoute] int id)
         {
             try

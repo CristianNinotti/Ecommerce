@@ -6,23 +6,18 @@ namespace Application.Mappings
 {
     public class OrderProfile
     {
-        public static Order ToOrderEntity(OrderRequest order)
+
+        public static Order ToOrderEntity(OrderRequest orderRequest)
         {
             return new Order()
             {
-                OrderDate = DateTime.Now,
-                OrderStatus = true,
-                UserId = order.UserId,                  
-                OrderItems = order.OrderItems.Select(o => new OrderItem
-                {
-                    OrderId = o.OrderId,
-                    ProductId = o.ProductId,
-                    Quantity = o.Quantity,
-                }).ToList() // Creamos la lista de OrderItems
+                OrderDate = DateTime.Now,      // Asignamos la fecha de la orden
+                OrderStatus = orderRequest.OrderStatus,            // Lo seteamos como true al crear la orden
+                UserId = orderRequest.UserId,  // UserId del request
+                                               // No tocamos la lista de OrderItems, se maneja fuera de la creación
             };
         }
 
-        // Método para convertir Order a OrderResponse
         public static OrderResponse ToOrderResponse(Order order)
         {
             return new OrderResponse
@@ -32,22 +27,17 @@ namespace Application.Mappings
                 TotalAmount = order.TotalAmount,
                 OrderStatus = order.OrderStatus,
                 UserId = order.UserId,
-                OrderItems = OrderItemProfile.ToOrderItemResponse(order.OrderItems) // Reutilizamos el método ya existente
+                OrderItems = OrderItemProfile.ToOrderItemResponse(order.OrderItems) // Aquí mapeamos los OrderItems
             };
         }
 
-        // Método para convertir una lista de Orders a OrderResponse
         public static List<OrderResponse> ToOrderResponse(List<Order> orders)
         {
-            return orders.Select(ToOrderResponse).ToList(); // Reutilizamos el método anterior
+            return orders.Select(ToOrderResponse).ToList();
         }
-
-        // Falta update // No estoy seguro que sea asi los response de arriba de OrderItem, lo dejo provisoriamente.
-        // Método para actualizar una entidad Order con un OrderRequest
-        public static void UpdateOrderEntity(Order order, OrderRequest orderRequest)
+        public static void ToOrderUpdate(Order order, OrderRequest request)
         {
-            order.OrderStatus = orderRequest.OrderStatus;
-            // No se permite modificar: OrderDate, TotalAmount ni UserId.
+            order.OrderStatus = request.OrderStatus;
         }
     }
 }

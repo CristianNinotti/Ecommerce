@@ -22,7 +22,6 @@ namespace Infrastructure.Data
         {
             return _orderItem.OrderItems.FirstOrDefault(m => m.Id == id);
         }
-        // Se utiliza en OrderService para poder utilizar la sumatoria y recorrido de la lista en el "Create"
         public IEnumerable<OrderItem> GetOrderItemsByOrderIdRepository(int orderId)
         {
             return _orderItem.OrderItems.Where(m => m.OrderId == orderId).ToList();

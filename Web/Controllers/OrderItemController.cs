@@ -37,7 +37,6 @@ namespace Web.Controllers
             }
         }
         [HttpPost("CreateOrderItem")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult CreateOrderItem([FromBody] OrderItemRequest orderItem)
         {
             try
@@ -50,13 +49,21 @@ namespace Web.Controllers
                 return BadRequest(new { message = "No hay stock suficiente para la cantidad solicitada. " + ex.Message }); // 400 Bad Request si no hay stock (Hace referencia a la validacion del servicio)
             }
         }
-        [HttpPut("UpdateOrderItem/{id}")]
+        [HttpPut("UpdateOrderItem/{orderItemId}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
-        public IActionResult UpdateOrderItem([FromRoute] int id, OrderItemRequest orderItem)
+        public IActionResult UpdateOrderItem([FromRoute]int orderItemId, [FromBody] OrderItemRequest orderItem)
         {
+            string? userIdClaim = User.FindFirst("Id")?.Value;
+            
+            if (userIdClaim == null)
+            {
+                return BadRequest("No esta logueado");
+            }
+            int userId = int.Parse(userIdClaim);
+
             try
             {
-                var updateSuccess = _orderItemService.ToUpdateOrderItem(id, orderItem);
+                var updateSuccess = _orderItemService.ToUpdateOrderItem(userId, orderItemId, orderItem);
 
                 // Verifica si la actualización fue exitosa
                 if (updateSuccess)
@@ -65,7 +72,7 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    return NotFound($"OrderItem con ID {id} no encontrada.");
+                    return NotFound($"Este ID {orderItemId} no corresponde a tu usuario.");
                 }
             }
             catch (InvalidOperationException ex)

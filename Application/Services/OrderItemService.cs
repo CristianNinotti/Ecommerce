@@ -3,19 +3,20 @@ using Application.Mappings;
 using Application.Models.Request;
 using Application.Models.Response;
 using Domain.Interfaces;
-using Domain.Entities;
 
 namespace Application.Services
 {
     public class OrderItemService : IOrderItemService
     {
         private readonly IOrderItemRepository _orderItemRepository;
-        private readonly IProductRepository _productRepository; // Usamos IProductRepository directamente
+        private readonly IProductRepository _productRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository)
+        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository, IOrderRepository orderRepository)
         {
             _orderItemRepository = orderItemRepository;
-            _productRepository = productRepository; // Inicializamos el repositorio de productos
+            _productRepository = productRepository;
+            _orderRepository = orderRepository;
         }
 
         public List<OrderItemResponse> GetAllOrderItems()
@@ -36,8 +37,7 @@ namespace Application.Services
 
         public void CreateOrderItem(OrderItemRequest orderItem)
         {
-            // Usamos el repositorio de productos para obtener el precio
-            var product = _productRepository.GetProductByIdRepository(orderItem.ProductId); // Obtener el producto por su ID
+            var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
             if (product == null)
             {
                 throw new Exception("Producto no encontrado");
@@ -46,52 +46,33 @@ namespace Application.Services
             {
                 throw new InvalidOperationException($"Stock insuficiente. Disponible: {product.Stock}");
             }
-
-            // Calculamos el TotalPrice aquí antes de crear el OrderItem
             var totalPrice = orderItem.Quantity * product.Price;
-
-            // Pasamos el precio del producto al crear el OrderItem
             var orderItemEntity = OrderItemProfile.ToOrderItemEntity(orderItem, product.Price);
-            orderItemEntity.TotalPrice = totalPrice; // Asignar TotalPrice antes de guardar
+            orderItemEntity.TotalPrice = totalPrice;
             _orderItemRepository.CreateOrderItemRepository(orderItemEntity);
         }
 
-
-        public bool ToUpdateOrderItem(int id, OrderItemRequest request)
+        public bool ToUpdateOrderItem(int userId, int orderItemId, OrderItemRequest request)
         {
-            var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(id);
-            if (orderItemEntity == null)
+            var orderEntity = _orderRepository.GetOrderByIdRepository(request.OrderId);
+            var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(orderItemId);
+            var product = _productRepository.GetProductByIdRepository(request.ProductId);
+
+            if (orderEntity == null ||orderItemEntity == null || userId != orderEntity.UserId || product == null)
             {
                 return false;
             }
-
-            // Obtener el producto asociado para verificar stock y precio
-            var product = _productRepository.GetProductByIdRepository(request.ProductId);
-            if (product == null)
-            {
-                return false; // O lanzar una excepción si lo prefieres
-            }
-
-            // Calcular stock disponible (considerando el stock actual + lo que ya estaba reservado)
             var stockDisponible = product.Stock + orderItemEntity.Quantity;
-
-            // Verificar si la cantidad solicitada supera el stock disponible
             if (request.Quantity > stockDisponible)
             {
                 throw new InvalidOperationException("Stock insuficiente para la cantidad solicitada.");
             }
-
-            // Calculamos el TotalPrice aquí con la nueva cantidad (request.Quantity)
             var totalPrice = request.Quantity * product.Price;
-
-            // Pasamos la nueva información al método de actualización
-            OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);  // <-- Aca se pasa el precio del producto
-            orderItemEntity.TotalPrice = totalPrice; // Asignar TotalPrice aquí
+            OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);
+            orderItemEntity.TotalPrice = totalPrice;
             _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
             return true;
         }
-
-
 
         public bool DeleteOrderItem(int id)
         {
