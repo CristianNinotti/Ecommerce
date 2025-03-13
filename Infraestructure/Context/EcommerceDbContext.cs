@@ -13,5 +13,6 @@ namespace Infraestructure.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Order> Orders {  get; set; }
+        public DbSet <Payment> Payments { get; set; }
     }
 }

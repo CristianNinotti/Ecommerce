@@ -37,11 +37,27 @@ namespace Application.Services
             return null;
         }
 
+      //  public void CreateOrder(OrderRequest orderRequest)
+      //  {
+      //      var order = OrderProfile.ToOrderEntity(orderRequest);
+      //      decimal totalAmount = order.OrderItems.Sum(oi => oi.TotalPrice);
+      //      order.TotalAmount = totalAmount;
+      //      _orderRepository.CreateOrderRepository(order);
+     //   }
+
         public void CreateOrder(OrderRequest orderRequest)
         {
             var order = OrderProfile.ToOrderEntity(orderRequest);
-           // decimal totalAmount = 0; //= order.OrderItems.Sum(oi => oi.TotalPrice);
-           // order.TotalAmount = totalAmount;
+
+            // Asegúrate de que el TotalPrice de cada OrderItem se calcule correctamente
+            foreach (var item in order.OrderItems)
+            {
+                item.TotalPrice = item.Quantity * item.Price;
+            }
+
+            decimal totalAmount = order.OrderItems.Sum(oi => oi.TotalPrice);
+            order.TotalAmount = totalAmount;
+
             _orderRepository.CreateOrderRepository(order);
         }
 
