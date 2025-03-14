@@ -13,7 +13,7 @@ namespace Application.Interfaces
         List<OrderItemResponse> GetAllOrderItems();
         OrderItemResponse? GetOrderItemById(int id);
         void CreateOrderItem(OrderItemRequest orderItem);
-        bool ToUpdateOrderItem(int userId, int  orderItemId, OrderItemRequest request);
+        bool ToUpdateOrderItem(int userId, int  orderItemId, OrderItemRequest orderItem);
         bool DeleteOrderItem(int id);
     }
 }

@@ -44,59 +44,38 @@ namespace Application.Services
 
         public bool CreatePayment(PaymentRequest payment)
         {
-            try
-            {
                 var paymentEntity = PaymentProfile.ToPaymentEntity(payment);
                 if (paymentEntity == null)
                 {
-                    Console.WriteLine("Error: Payment entity is null.");
                     return false;
                 }
                 var order = _orderRepository.GetOrderByIdRepository(payment.OrderId);
-                var orderItems = _orderItemRepository.GetOrderItemsByOrderIdRepository(payment.OrderId);
-                if (order == null || orderItems == null || !orderItems.Any())
+                if (order == null || order.OrderItems == null || !order.OrderItems.Any())
                 {
-                    Console.WriteLine("Error: Order or OrderItems are missing.");
                     return false;
                 }
-                Console.WriteLine($"Payment Amount: {payment.Amount}, Order Total: {order.TotalAmount}");
                 if (payment.Amount != order.TotalAmount)
                 {
-                    Console.WriteLine("Error: Payment amount does not match order total.");
                     return false;
                 }
-                foreach (var orderItem in orderItems)
+                foreach (var orderItem in order.OrderItems)
                 {
                     var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
-                    if (product != null && product.Stock >= orderItem.Quantity)
+                    if (product == null || product.Stock < orderItem.Quantity)
                     {
-                        Console.WriteLine($"Updating product {product.Id}. Stock: {product.Stock}, Quantity: {orderItem.Quantity}");
-                        Console.WriteLine($"OrderItem: ProductId={product.Id}, Quantity={product.Stock}, Price={product.Price}, TotalPrice={orderItem.TotalPrice}");
-                        product.Stock -= orderItem.Quantity;
-                        _productRepository.UpdateProductRepository(product);
-                        _orderItemRepository.UpdateOrderItemRepository(orderItem);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Error: Product {orderItem.ProductId} does not have enough stock.");
                         return false;
                     }
+                    product.Stock -= orderItem.Quantity;
+                    _productRepository.UpdateProductRepository(product);
+                    _orderItemRepository.UpdateOrderItemRepository(orderItem);
                 }
                 order.OrderStatus = false;
-                Console.WriteLine("Updating order status to false.");
-                _orderRepository.UpdateOrderRepository(order);
-                Console.WriteLine("Creating payment...");
-                _paymentRepository.CreatePayment(paymentEntity);
-                Console.WriteLine("Payment processed successfully.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
+                order.Payment = paymentEntity;
+                
+            _paymentRepository.CreatePayment(paymentEntity);
+            _orderRepository.UpdateOrderRepository(order);
+            return true;
         }
-
         public bool ToUpdatePayment(int id, PaymentRequest request)
         {
             var paymentEntity = _paymentRepository.GetPaymentById(id);

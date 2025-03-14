@@ -36,28 +36,15 @@ namespace Application.Services
             }
             return null;
         }
-
-      //  public void CreateOrder(OrderRequest orderRequest)
-      //  {
-      //      var order = OrderProfile.ToOrderEntity(orderRequest);
-      //      decimal totalAmount = order.OrderItems.Sum(oi => oi.TotalPrice);
-      //      order.TotalAmount = totalAmount;
-      //      _orderRepository.CreateOrderRepository(order);
-     //   }
-
         public void CreateOrder(OrderRequest orderRequest)
         {
             var order = OrderProfile.ToOrderEntity(orderRequest);
-
-            // Asegúrate de que el TotalPrice de cada OrderItem se calcule correctamente
-            foreach (var item in order.OrderItems)
+            foreach (var orderItem in order.OrderItems)
             {
-                item.TotalPrice = item.Quantity * item.Price;
+                orderItem.TotalPrice = orderItem.Quantity * orderItem.Price;
             }
-
             decimal totalAmount = order.OrderItems.Sum(oi => oi.TotalPrice);
             order.TotalAmount = totalAmount;
-
             _orderRepository.CreateOrderRepository(order);
         }
 

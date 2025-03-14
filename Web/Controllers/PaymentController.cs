@@ -43,12 +43,15 @@ namespace Web.Controllers
         {
             try
             {
-                _paymentService.CreatePayment(request);
+                bool paymentCreated = _paymentService.CreatePayment(request);
+                if (!paymentCreated)
+                {
+                    throw new InvalidOperationException("El pago no pudo ser creado.");
+                }
                 return Ok("Pago creado con éxito");
             }
-            catch ( InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
-
                 return BadRequest(new { Message = "No se pudo crear el pago solicitado. " + ex.Message });
             }
         }
