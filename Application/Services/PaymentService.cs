@@ -71,7 +71,6 @@ namespace Application.Services
                 }
                 order.OrderStatus = false;
                 order.Payment = paymentEntity;
-                
             _paymentRepository.CreatePayment(paymentEntity);
             _orderRepository.UpdateOrderRepository(order);
             return true;

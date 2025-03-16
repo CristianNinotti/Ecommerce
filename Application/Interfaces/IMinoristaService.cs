@@ -10,7 +10,8 @@ namespace Application.Interfaces
     MinoristaResponse? GetMinoristaById(int id);
     void CreateMinorista(MinoristaRequest minorista);
     bool UpdateMinorista(int id, MinoristaRequest minorista);
-    bool DeleteMinorista(int id);
+    bool SoftDeleteMinorista(int id);
+    bool HardDeleteMinorista(int id);
 
     }
 }

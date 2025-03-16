@@ -37,9 +37,7 @@ namespace Web.Controllers
         public ActionResult<ProductResponse?> GetAllProducts([FromRoute] int id)
         {
             // Filtra los productos por CategoryId
-            var productInCategory = _productService.GetAllProducts()
-                                                    .Where(m => m.CategoryId == id)  // Filtra los productos por CategoryId
-                                                    .ToList(); // Asegúrate de materializar la lista
+            var productInCategory = _productService.GetAllProducts().Where(m => m.CategoryId == id).ToList();
 
             return Ok(productInCategory);
         }
@@ -61,11 +59,17 @@ namespace Web.Controllers
             return Ok(_categoryService.UpdateCategory(id, request));
         }
 
-        [HttpDelete("DeleteCategory/{id}")]
+        [HttpDelete("SoftDeleteCategory/{id}")]
         [Authorize(Policy ="SuperAdminOnly")]
-        public ActionResult<bool> DeleteCategory([FromRoute]int id)
+        public ActionResult<bool> SoftDeleteCategory([FromRoute]int id)
         {
-            return Ok(_categoryService.DeleteCategory(id));
+            return Ok(_categoryService.SoftDeleteCategory(id));
+        }
+        [HttpDelete("HardDeleteCategory/{id}")]
+        [Authorize(Policy = "SuperAdminOnly")]
+        public ActionResult<bool> HardDeleteCategory([FromRoute] int id)
+        {
+            return Ok(_categoryService.HardDeleteCategory(id));
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Application.Mappings
             {
                 Id = response.Id,
                 Name = response.Name,
+                Available = response.Available,
             };
         }
         public static List<CategoryResponse> ToCategoryResponse(List<Category> category)
@@ -31,7 +32,7 @@ namespace Application.Mappings
             {
                 Id = c.Id,
                 Name = c.Name,
-
+                Available = c.Available
             }).ToList();
         }
 

@@ -55,13 +55,28 @@ namespace Web.Controllers
                 return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
             }
         }
-        [HttpDelete("DeleteProduct/{id}")]
+        [HttpDelete("SoftDeleteProduct/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
-        public IActionResult DeleteProduct([FromRoute]int id)
+        public IActionResult SoftDeleteProduct([FromRoute]int id)
         {
             try
             {
-                _productService.DeleteProduct(id);
+                _productService.SoftDeleteProduct(id);
+                return Ok("Producto Eliminado");
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("HardDeleteProduct/{id}")]
+        [Authorize(Policy = "SuperAdminOnly")]
+        public IActionResult HardDeleteProduct([FromRoute] int id)
+        {
+            try
+            {
+                _productService.HardDeleteProduct(id);
                 return Ok("Producto Eliminado");
             }
             catch (Exception ex)

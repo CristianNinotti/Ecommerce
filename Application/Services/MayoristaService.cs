@@ -55,7 +55,19 @@ namespace Application.Services
             return true;
         }
 
-        public bool DeleteMayorista(int id)
+        public bool SoftDeleteMayorista(int id)
+        {
+            var MayoristaEntity = _mayoristaRepository.GetMayoristaById(id);
+            if (MayoristaEntity == null)
+            {
+                return false;
+            }
+            MayoristaEntity.Available = false;
+            _mayoristaRepository.UpdateMayorista(MayoristaEntity);
+            return true;
+        }
+
+        public bool HardDeleteMayorista(int id)
         {
             var MayoristaEntity = _mayoristaRepository.GetMayoristaById(id);
             if (MayoristaEntity == null)

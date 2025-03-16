@@ -11,9 +11,11 @@ namespace Application.Interfaces
     public interface IOrderItemService
     {
         List<OrderItemResponse> GetAllOrderItems();
+        List<OrderItemResponse> GetAllOrderItemsByProductId(int id);
         OrderItemResponse? GetOrderItemById(int id);
         void CreateOrderItem(OrderItemRequest orderItem);
         bool ToUpdateOrderItem(int userId, int  orderItemId, OrderItemRequest orderItem);
-        bool DeleteOrderItem(int id);
+        bool SoftDeleteOrderItem(int id);
+        bool HardDeleteOrderItem(int id);
     }
 }

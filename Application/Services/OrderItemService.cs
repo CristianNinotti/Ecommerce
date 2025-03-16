@@ -32,6 +32,12 @@ namespace Application.Services
             return OrderItemProfile.ToOrderItemResponse(orderItems);
         }
 
+        public List<OrderItemResponse> GetAllOrderItemsByProductId(int id)
+        {
+            var orderItems = _orderItemRepository.GetAllOrderItemsByProductIdRepository(id);
+            return OrderItemProfile.ToOrderItemResponse(orderItems);
+        }
+
         public OrderItemResponse? GetOrderItemById(int id)
         {
             var orderItem = _orderItemRepository.GetOrderItemByIdRepository(id);
@@ -46,7 +52,7 @@ namespace Application.Services
         {
             var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderItem.OrderId);
-            if (product != null && orderEntity != null && orderItem.Quantity <= product.Stock)
+            if (product != null && orderEntity != null && orderEntity.OrderStatus == true && product.Available == true && orderItem.Quantity <= product.Stock)
             {
                 var mayoristaEntity = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
                 var totalPrice = orderItem.Quantity * product.Price;
@@ -57,7 +63,7 @@ namespace Application.Services
                     orderItemEntity.TotalPrice = orderItemEntity.TotalPrice * discount;
                 }
                 _orderItemRepository.CreateOrderItemRepository(orderItemEntity);
-                orderEntity.TotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderItem.OrderId).Sum(oi => oi.TotalPrice);
+                orderEntity.TotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderItem.OrderId).Where(oi => oi.Available == true).Sum(oi => oi.TotalPrice);
                 _orderRepository.UpdateOrderRepository(orderEntity);
             }
         }
@@ -68,7 +74,7 @@ namespace Application.Services
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(orderItemId);
             var product = _productRepository.GetProductByIdRepository(request.ProductId);
             var mayoristaEntity = _mayoristaRepository.GetMayoristaById(userId);
-            if (orderEntity != null && orderItemEntity != null && userId == orderEntity.UserId && product != null)
+            if (orderEntity != null && orderItemEntity != null && userId == orderEntity.UserId && product != null && orderEntity.OrderStatus == true && product.Available == true)
             {
                 var stockDisponible = product.Stock + orderItemEntity.Quantity;
                 if (request.Quantity <= stockDisponible)
@@ -80,7 +86,7 @@ namespace Application.Services
                     }
                     OrderItemProfile.ToOrderItemUpdate(orderItemEntity, request, product.Price);
                     _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
-                    orderEntity.TotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderEntity.Id).Sum(oi => oi.TotalPrice);
+                    orderEntity.TotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderEntity.Id).Where(oi => oi.Available == true).Sum(oi => oi.TotalPrice);
                     _orderRepository.UpdateOrderRepository(orderEntity);
                     return true;
                 }
@@ -88,7 +94,29 @@ namespace Application.Services
             return false;
         }
 
-        public bool DeleteOrderItem(int id)
+        public bool SoftDeleteOrderItem(int id)
+        {
+            var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(id);
+            if (orderItemEntity == null)
+            {
+                return false;
+            }
+            orderItemEntity.Available = false;
+            _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
+            var orderEntity = _orderRepository.GetOrderByIdRepository(orderItemEntity.OrderId);
+            if (orderEntity == null)
+            {
+                return false;
+            }
+            var updatedTotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderEntity.Id)
+                .Where(oi => oi.Available)
+                .Sum(oi => oi.TotalPrice);
+            orderEntity.TotalAmount = updatedTotalAmount;
+            _orderRepository.UpdateOrderRepository(orderEntity);
+            return true;
+        }
+
+        public bool HardDeleteOrderItem(int id)
         {
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(id);
             if (orderItemEntity == null)

@@ -18,6 +18,11 @@ namespace Infrastructure.Data
             return _orderItem.OrderItems.ToList();
         }
 
+        public List<OrderItem> GetAllOrderItemsByProductIdRepository(int id)
+        {
+            return _orderItem.OrderItems.Where(m => m.ProductId == id).ToList();
+        }
+
         public OrderItem? GetOrderItemByIdRepository(int id)
         {
             return _orderItem.OrderItems.FirstOrDefault(m => m.Id == id);

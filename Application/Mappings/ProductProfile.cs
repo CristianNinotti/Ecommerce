@@ -30,6 +30,7 @@ namespace Application.Mappings
                 Stock = product.Stock,
                 CategoryId = product.CategoryId,
                 Photos = product.Photos,
+                Available = product.Available,
        
             };
         }
@@ -44,6 +45,7 @@ namespace Application.Mappings
                 Stock = c.Stock,
                 CategoryId = c.CategoryId,
                 Photos = c.Photos,
+                Available = c.Available
 
 
             }).ToList();

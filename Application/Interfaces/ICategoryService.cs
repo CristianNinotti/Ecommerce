@@ -9,6 +9,7 @@ namespace Application.Interfaces
         CategoryResponse? GetCategoryById(int id);
         void CreateCategory(CategoryRequest category);
         bool UpdateCategory(int id, CategoryRequest category);
-        bool DeleteCategory(int id);
+        bool SoftDeleteCategory(int id);
+        bool HardDeleteCategory(int id);
     }
 }

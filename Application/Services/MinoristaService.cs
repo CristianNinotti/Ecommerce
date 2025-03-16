@@ -31,13 +31,13 @@ namespace Application.Services
             return null;
         }
 
-        public void CreateMinorista(MinoristaRequest minorista) // Sustituir Minorista Response - Void
+        public void CreateMinorista(MinoristaRequest minorista)
         {
             var minoristaEntity = MinoristaProfile.ToMinoristaEntity(minorista);
             _minoristaRepository.CreateMinorista(minoristaEntity);
         }
 
-        public bool UpdateMinorista(int id, MinoristaRequest minorista) // Sustituir Minorista Response - Bool
+        public bool UpdateMinorista(int id, MinoristaRequest minorista)
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
             if (minoristaEntity == null) 
@@ -49,10 +49,22 @@ namespace Application.Services
             return true;
         }
 
-        public bool DeleteMinorista(int id)                        // Sustituir Minorista Response - Bool
+        public bool SoftDeleteMinorista(int id)
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
             if ( minoristaEntity == null )
+            {
+                return false;
+            }
+            minoristaEntity.Available = false;
+            _minoristaRepository.UpdateMinorista(minoristaEntity);
+            return true;
+        }
+
+        public bool HardDeleteMinorista(int id)
+        {
+            var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
+            if (minoristaEntity == null)
             {
                 return false;
             }

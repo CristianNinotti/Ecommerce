@@ -11,10 +11,10 @@ namespace Application.Mappings
         {
             return new Order()
             {
-                OrderDate = DateTime.Now,      // Asignamos la fecha de la orden
-                OrderStatus = orderRequest.OrderStatus,            // Lo seteamos como true al crear la orden
-                UserId = orderRequest.UserId,  // UserId del request
-                                               // No tocamos la lista de OrderItems, se maneja fuera de la creación
+                OrderDate = DateTime.Now,
+                OrderStatus = orderRequest.OrderStatus,
+                UserId = orderRequest.UserId,
+                                               
             };
         }
 
@@ -27,7 +27,7 @@ namespace Application.Mappings
                 TotalAmount = order.TotalAmount,
                 OrderStatus = order.OrderStatus,
                 UserId = order.UserId,
-                OrderItems = OrderItemProfile.ToOrderItemResponse(order.OrderItems) // Aquí mapeamos los OrderItems
+                OrderItems = OrderItemProfile.ToOrderItemResponse(order.OrderItems),
             };
         }
 

@@ -9,5 +9,6 @@
         public int Stock { get; set; }
         public int CategoryId { get; set; }
         public List<string>? Photos { get; set; }
+        public bool Available { get; set; }
     }
 }

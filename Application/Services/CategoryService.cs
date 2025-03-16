@@ -50,10 +50,22 @@ namespace Application.Services
             return true;
         }
 
-        public bool DeleteCategory(int id)
+        public bool SoftDeleteCategory(int id)
         {
             var CategoryEntity = _categoryRepository.GetCategoryById(id);
             if(CategoryEntity == null)
+            {
+                return false;
+            }
+            CategoryEntity.Available = false;
+            _categoryRepository.UpdateCategory(CategoryEntity);
+            return true;
+        }
+
+        public bool HardDeleteCategory(int id)
+        {
+            var CategoryEntity = _categoryRepository.GetCategoryById(id);
+            if (CategoryEntity == null)
             {
                 return false;
             }

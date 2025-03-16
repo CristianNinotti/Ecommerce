@@ -38,6 +38,7 @@ namespace Application.Mappings
                 Dni = minorista.Dni,
                 PhoneNumber = minorista.PhoneNumber,
                 Address = minorista.Address,
+                Available = minorista.Available
             };
         }
 
@@ -52,7 +53,8 @@ namespace Application.Mappings
                 Dni = c.Dni,
                 Email = c.Email,
                 PhoneNumber = c.PhoneNumber,
-                Address = c.Address
+                Address = c.Address,
+                Available = c.Available
 
             }).ToList();
         }

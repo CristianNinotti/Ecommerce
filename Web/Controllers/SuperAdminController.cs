@@ -59,10 +59,17 @@ public class SuperAdminController : ControllerBase
         return Ok(_superAdminService.UpdateSuperAdmin(id, superAdmin));
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("SoftDeleteAdmin/{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
-    public ActionResult<bool> DeleteSuperAdmin([FromRoute] int id)
+    public ActionResult<bool> SoftDeleteSuperAdmin([FromRoute] int id)
     {
-        return Ok(_superAdminService.DeleteSuperAdmin(id));
+        return Ok(_superAdminService.SoftDeleteSuperAdmin(id));
+    }
+
+    [HttpDelete("HardDeleteAdmin/{id}")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public ActionResult<bool> HardDeleteSuperAdmin([FromRoute] int id)
+    {
+        return Ok(_superAdminService.HardDeleteSuperAdmin(id));
     }
 }

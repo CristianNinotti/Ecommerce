@@ -9,6 +9,7 @@ namespace Application.Interfaces
         OrderResponse? GetOrderById(int id);
         void CreateOrder(OrderRequest orderRequest);
         bool ToUpdateOrder(int userId, int orderId, OrderRequest request);
-        bool DeleteOrder(int orderId);
+        bool SoftDeleteOrder(int orderId);
+        bool HardDeleteOrder(int orderId);
     }
 }

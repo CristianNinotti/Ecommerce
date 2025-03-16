@@ -46,19 +46,33 @@ namespace Web.Controllers
             }
         }
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("SoftDelete/{id}")]
         [Authorize(Policy = "MayoristaOrSuperAdmin")]
-        public IActionResult DeleteMayorista([FromRoute]int id)
+        public IActionResult SoftDeleteMayorista([FromRoute]int id)
         {
             try
             {
-                _mayoristaService.DeleteMayorista(id);
+                _mayoristaService.SoftDeleteMayorista(id);
                 return Ok("Mayorista Borrado");
             }
             catch (Exception ex)
             {
                 return NotFound($"Mayorista con ID {id} no encontrado. Error: {ex.Message}");
             }
-        }   
+        }
+        [HttpDelete("HardDelete/{id}")]
+        [Authorize(Policy = "MayoristaOrSuperAdmin")]
+        public IActionResult HardDeleteMayorista([FromRoute] int id)
+        {
+            try
+            {
+                _mayoristaService.HardDeleteMayorista(id);
+                return Ok("Mayorista Borrado");
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Mayorista con ID {id} no encontrado. Error: {ex.Message}");
+            }
+        }
     }
 }

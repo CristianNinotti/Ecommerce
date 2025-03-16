@@ -3,6 +3,7 @@
     public class User
     {
         public int Id { get; set; }
+        public bool Available { get; set; } = true;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string NameAccount { get; set; } = string.Empty;

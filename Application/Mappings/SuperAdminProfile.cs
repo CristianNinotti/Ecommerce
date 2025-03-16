@@ -29,7 +29,8 @@ namespace Application.Mappings
                 FirstName = superAdmin.FirstName,
                 LastName = superAdmin.LastName,
                 Dni = superAdmin.Dni,
-                Email = superAdmin.Email
+                Email = superAdmin.Email,
+                Available = superAdmin.Available
             };
         }
 
@@ -44,7 +45,8 @@ namespace Application.Mappings
                 Dni = c.Dni,
                 Email = c.Email,
                 PhoneNumber = c.PhoneNumber,
-                Address = c.Address
+                Address = c.Address,
+                Available = c.Available
 
             }).ToList();
         }

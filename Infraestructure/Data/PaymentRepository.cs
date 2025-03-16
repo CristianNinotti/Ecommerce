@@ -36,13 +36,13 @@ namespace Infrastructure.Data
 
         public void UpdatePayment(Payment payment)
         {
-            _payment.Update(payment);
+            _payment.Payments.Update(payment);
             _payment.SaveChanges();
         }
 
         public void DeletePayment(Payment payment)
         {
-            _payment.Remove(payment);
+            _payment.Payments.Remove(payment);
             _payment.SaveChanges();
         }
     }

@@ -13,11 +13,7 @@ namespace Application.Models.Response
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public bool OrderStatus { get; set; }
-
-        // Identificador del usuario (puede ser de cualquier tabla de cliente)
         public int UserId { get; set; }
-
-        // Aca trae la lista de OrderItems para que le quede el listado al cliente de cada producto subdividido
         public List<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
     }
 }

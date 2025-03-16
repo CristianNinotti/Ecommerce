@@ -29,7 +29,6 @@ namespace Application.Services
             {
                 return SuperAdminProfile.ToSuperAdminResponse(superAdmin);
             }
-
             return null;
         }
 
@@ -62,19 +61,26 @@ namespace Application.Services
             return false;
         }
 
-
-
-        public bool DeleteSuperAdmin(int id)
+        public bool SoftDeleteSuperAdmin(int id)
         {
             var superAdmin = _superAdminRepository.GetSuperAdminById(id);
+            if (superAdmin != null)
+            {
+                superAdmin.Available = false;
+                _superAdminRepository.UpdateSuperAdmin(superAdmin);
+                return true;
+            }
+            return false;
+        }
 
+        public bool HardDeleteSuperAdmin(int id)
+        {
+            var superAdmin = _superAdminRepository.GetSuperAdminById(id);
             if (superAdmin != null)
             {
                 _superAdminRepository.DeleteSuperAdmin(superAdmin);
-
                 return true;
             }
-
             return false;
         }
     }

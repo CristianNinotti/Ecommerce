@@ -41,13 +41,28 @@ namespace Web.Controllers
                 return NotFound($"Minorista con ID {id} no encontrado. Error: {ex.Message}");
             }
         }
-        [HttpDelete("DeleteMinorista/{id}")]
+        [HttpDelete("SoftDeleteMinorista/{id}")]
         [Authorize(Policy = "MinoristaOrSuperAdmin")]
-        public IActionResult DeleteMinorista([FromRoute] int id)
+        public IActionResult SoftDeleteMinorista([FromRoute] int id)
         {
             try
             {
-                _minoristaService.DeleteMinorista(id);
+                _minoristaService.SoftDeleteMinorista(id);
+                return Ok("Minorista Borrado");
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Minorista con ID {id} no encontrado. Error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("HardDeleteMinorista/{id}")]
+        [Authorize(Policy = "MinoristaOrSuperAdmin")]
+        public IActionResult HardDeleteMinorista([FromRoute] int id)
+        {
+            try
+            {
+                _minoristaService.HardDeleteMinorista(id);
                 return Ok("Minorista Borrado");
             }
             catch (Exception ex)

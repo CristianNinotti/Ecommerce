@@ -2,7 +2,6 @@
 using Application.Mappings;
 using Application.Models.Request;
 using Application.Models.Response;
-using Domain.Entities;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -13,13 +12,17 @@ namespace Application.Services
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IProductRepository _productRepository;
         private readonly IMayoristaRepository _mayoristaRepository;
+        private readonly IMinoristaRepository _minoristaRepository;
+        private readonly ISuperAdminRepository _superAdminRepository;
 
-        public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository, IMayoristaRepository mayoristaRepository)
+        public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository, IMayoristaRepository mayoristaRepository, IMinoristaRepository minoristaRepository, ISuperAdminRepository superAdminRepository)
         {
             _orderRepository = orderRepository;
             _orderItemRepository = orderItemRepository;
             _productRepository = productRepository;
             _mayoristaRepository = mayoristaRepository;
+            _minoristaRepository = minoristaRepository;
+            _superAdminRepository = superAdminRepository;
         }
 
         public List<OrderResponse> GetAllOrders()
@@ -39,43 +42,50 @@ namespace Application.Services
         public void CreateOrder(OrderRequest orderRequest)
         {
             var order = OrderProfile.ToOrderEntity(orderRequest);
-            foreach (var orderItem in order.OrderItems)
+            var mayorista = _mayoristaRepository.GetMayoristaById(orderRequest.UserId);
+            var minorista = _minoristaRepository.GetMinoristaById(orderRequest.UserId);
+            var superAdmin = _superAdminRepository.GetSuperAdminById(orderRequest.UserId);
+            if (mayorista != null && mayorista.Available == true || minorista != null && minorista.Available == true || superAdmin != null && superAdmin.Available == true)
             {
-                orderItem.TotalPrice = orderItem.Quantity * orderItem.Price;
+                _orderRepository.CreateOrderRepository(order);
             }
-            decimal totalAmount = order.OrderItems.Sum(oi => oi.TotalPrice);
-            order.TotalAmount = totalAmount;
-            _orderRepository.CreateOrderRepository(order);
         }
 
         public bool ToUpdateOrder(int userId, int orderId, OrderRequest request)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderId);
-            if (orderEntity == null || orderEntity.OrderStatus == false || userId != orderEntity.UserId)
+            if (orderEntity == null || userId != orderEntity.UserId || orderEntity.User == null || orderEntity.User.Available == false)
             {
-                return false; 
-            }
-            if (orderEntity.OrderItems.Any())
-            {
-                orderEntity.TotalAmount = orderEntity.OrderItems.Sum(oi => oi.TotalPrice);
-                var user = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
-                if (user != null)
-                {
-                    orderEntity.TotalAmount = orderEntity.TotalAmount * 0.9m;
-                }
-                _orderRepository.UpdateOrderRepository(orderEntity);
+                return false;
             }
             orderEntity.OrderStatus = request.OrderStatus;
+            _orderRepository.UpdateOrderRepository(orderEntity);
             return true;
         }
 
-        public bool DeleteOrder(int orderId)
+        public bool SoftDeleteOrder(int orderId)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderId);
             if (orderEntity == null)
             {
                 return false;
             }
+            orderEntity.OrderStatus = false;
+            foreach (var orderItem in orderEntity.OrderItems)
+            {
+                orderItem.Available = false;
+            }
+            _orderRepository.UpdateOrderRepository(orderEntity);
+            return true;
+        }
+        public bool HardDeleteOrder(int orderId)
+        {
+            var orderEntity = _orderRepository.GetOrderByIdRepository(orderId);
+            if (orderEntity == null)
+            {
+                return false;
+            }
+            orderEntity.OrderStatus = false;
             _orderRepository.DeleteOrderRepository(orderEntity);
             return true;
         }

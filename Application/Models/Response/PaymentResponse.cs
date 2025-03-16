@@ -15,5 +15,6 @@ namespace Application.Models.Response
     
         public DateTime PaymentDate { get; set; }
         public Paymethod PayMethod { get; set; }
+        public bool Available { get; set; }
     }
 }

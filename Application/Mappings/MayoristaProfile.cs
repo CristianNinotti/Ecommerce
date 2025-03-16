@@ -40,6 +40,7 @@ namespace Application.Mappings
                 Email = response.Email,
                 PhoneNumber = response.PhoneNumber,
                 Address = response.Address,
+                Available = response.Available
             };
         }
 
@@ -54,7 +55,8 @@ namespace Application.Mappings
                 Dni = c.Dni,
                 Email = c.Email,
                 PhoneNumber = c.PhoneNumber,
-                Address = c.Address
+                Address = c.Address,
+                Available = c.Available
 
             }).ToList();
         }

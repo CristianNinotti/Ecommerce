@@ -9,6 +9,7 @@ namespace Application.Interfaces
         MayoristaResponse? GetMayoristaById(int id);
         void CreateMayorista(MayoristaRequest request);
         bool UpdateMayorista(int id, MayoristaRequest request);
-        bool DeleteMayorista(int id);
+        bool SoftDeleteMayorista(int id);
+        bool HardDeleteMayorista(int id);
     }
 }

@@ -1,14 +1,11 @@
 ﻿using Application.Models.Request;
 using Application.Models.Response;
 using Domain.Entities;
-using Application.Services;
-using Application.Interfaces; // Asumiendo que tienes un servicio para acceder a productos
 
 namespace Application.Mappings
 {
     public static class OrderItemProfile
     {
-        // Método para convertir OrderItemRequest en OrderItem
         public static OrderItem ToOrderItemEntity(OrderItemRequest orderItem, decimal price)
         {
             return new OrderItem()
@@ -16,7 +13,7 @@ namespace Application.Mappings
                 OrderId = orderItem.OrderId,
                 ProductId = orderItem.ProductId,
                 Quantity = orderItem.Quantity,
-                Price = price, // Asignamos el precio recibido
+                Price = price,
             };
         }
 
@@ -32,6 +29,7 @@ namespace Application.Mappings
                 Quantity = orderItem.Quantity,
                 Price = orderItem.Price,
                 TotalPrice = orderItem.TotalPrice,
+                Available = orderItem.Available,
             };
         }
 
@@ -45,16 +43,16 @@ namespace Application.Mappings
                 Quantity = c.Quantity,
                 Price = c.Price,
                 TotalPrice = c.TotalPrice,
+                Available = c.Available
             }).ToList();
         }
 
-        // Método para actualizar OrderItem
         public static void ToOrderItemUpdate(OrderItem orderItem, OrderItemRequest request, decimal price)
         {
             orderItem.OrderId = request.OrderId;
             orderItem.ProductId = request.ProductId;
             orderItem.Quantity = request.Quantity;
-            orderItem.Price = price; // Usamos el precio pasado como parámetro
+            orderItem.Price = price;
         }
     }
 }

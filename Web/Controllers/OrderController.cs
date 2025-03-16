@@ -88,14 +88,30 @@ namespace Web.Controllers
             }
         }
 
-        [HttpDelete("DeleteOrder/{id}")]
+        [HttpDelete("SoftDeleteOrder/{id}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
 
-        public IActionResult DeleteOrder([FromRoute] int id)
+        public IActionResult SoftDeleteOrder([FromRoute] int id)
         {
             try
             {
-                _orderService.DeleteOrder(id);
+                _orderService.SoftDeleteOrder(id);
+                return Ok("Orden Eliminada");
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("HardDeleteOrder/{id}")]
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
+        public IActionResult HardDeleteOrder([FromRoute] int id)
+        {
+            try
+            {
+                _orderService.HardDeleteOrder(id);
                 return Ok("Orden Eliminada");
             }
             catch (Exception ex)

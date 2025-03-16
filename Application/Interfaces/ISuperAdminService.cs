@@ -9,6 +9,7 @@ namespace Application.Interfaces
         SuperAdminResponse? GetSuperAdminById(int id);
         void CreateSuperAdmin(SuperAdminRequest entity);
         bool UpdateSuperAdmin(int id, SuperAdminRequest superAdmin);
-        bool DeleteSuperAdmin(int id);
+        bool SoftDeleteSuperAdmin(int id);
+        bool HardDeleteSuperAdmin(int id);
     }
 }
