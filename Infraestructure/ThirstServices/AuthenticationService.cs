@@ -33,9 +33,7 @@ public class AuthenticationService : IAuthenticationService
 
     private User? ValidateUser(AuthenticationRequest authenticationRequest)
     {
-
         User? user = null;
-
 
         var mayoristas = _mayoristaRepository.GetMayoristas();
         user = mayoristas.FirstOrDefault(x =>
@@ -43,8 +41,12 @@ public class AuthenticationService : IAuthenticationService
             x.Password.Equals(authenticationRequest.Password));
 
         if (user != null)
-            return user;
+        {
+            if (!user.Available)
+                throw new UnauthorizedAccessException("El usuario ha sido desactivado.");
 
+            return user;
+        }
 
         var minoristas = _minoristaRepository.GetAllMinoristas();
         user = minoristas.FirstOrDefault(x =>
@@ -52,15 +54,23 @@ public class AuthenticationService : IAuthenticationService
             x.Password.Equals(authenticationRequest.Password));
 
         if (user != null)
-            return user;
+        {
+            if (!user.Available)
+                throw new UnauthorizedAccessException("El usuario ha sido desactivado.");
 
+            return user;
+        }
 
         var superAdmins = _superAdminRepository.GetAllSuperAdmins();
         user = superAdmins.FirstOrDefault(x =>
-               x.NameAccount.Equals(authenticationRequest.NameAccount) &&
-               x.Password.Equals(authenticationRequest.Password));
+            x.NameAccount.Equals(authenticationRequest.NameAccount) &&
+            x.Password.Equals(authenticationRequest.Password));
 
-         
+        if (user != null && !user.Available)
+        {
+            throw new UnauthorizedAccessException("El usuario ha sido desactivado.");
+        }
+
         return user;
     }
 

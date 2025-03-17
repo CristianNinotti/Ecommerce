@@ -21,20 +21,22 @@ namespace Web.Controllers
         {
             try
             {
-                // Intenta autenticar y generar el token
                 string token = _customAuthenticationService.Authenticate(authenticationRequest);
                 return Ok(token);
             }
-            catch (UnauthorizedAccessException) // Captura la excepción de autenticación fallida
+            catch (UnauthorizedAccessException ex)
             {
-                // Devuelve un estado 401 Unauthorized con un mensaje claro
+                if (ex.Message == "El usuario ha sido desactivado.")
+                {
+                    return Unauthorized(new { message = "El usuario ha sido desactivado. Contacte con soporte." });
+                }
                 return Unauthorized(new { message = "Credenciales incorrectas. Por favor, inténtelo de nuevo." });
             }
             catch (Exception ex)
             {
-                // Captura otros errores si hay algún problema interno
                 return StatusCode(500, new { message = "Error interno del servidor.", details = ex.Message });
             }
         }
+
     }
 }
