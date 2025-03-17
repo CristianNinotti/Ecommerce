@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
 using Infraestructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
@@ -34,10 +35,23 @@ namespace Infrastructure.Data
             _category.Categories.Update(category);
             _category.SaveChanges();
         }
+
+        //SoftDelete
+        public void SoftDeleteCategory(Category category)
+        {
+            category.Available = false;
+            _category.SaveChanges();
+        }
+
+        //HardDelete
         public void DeleteCategory(Category category)
         {
             _category.Categories.Remove(category);
             _category.SaveChanges();
         }
+
+
+
+
     }
 }

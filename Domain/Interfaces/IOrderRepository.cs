@@ -8,6 +8,7 @@ namespace Domain.Interfaces
         Order? GetOrderByIdRepository(int id);
         void CreateOrderRepository(Order order);
         void UpdateOrderRepository(Order order);
+        void SoftDeleteOrderRepository(Order order);
         void DeleteOrderRepository(Order order);
     }
 }

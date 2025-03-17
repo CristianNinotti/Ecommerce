@@ -10,6 +10,7 @@ namespace Domain.Interfaces
         IEnumerable<OrderItem> GetOrderItemsByOrderIdRepository(int orderId);
         void CreateOrderItemRepository(OrderItem orderItem);
         void UpdateOrderItemRepository(OrderItem orderItem);
+        void SoftDeleteOrderItemRepository(OrderItem orderItem);
         void DeleteOrderItemRepository(OrderItem orderItem);
     }
 }

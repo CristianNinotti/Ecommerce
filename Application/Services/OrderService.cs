@@ -75,7 +75,7 @@ namespace Application.Services
             {
                 orderItem.Available = false;
             }
-            _orderRepository.UpdateOrderRepository(orderEntity);
+            _orderRepository.SoftDeleteOrderRepository(orderEntity);
             return true;
         }
         public bool HardDeleteOrder(int orderId)

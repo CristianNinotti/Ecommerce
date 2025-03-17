@@ -44,6 +44,15 @@ namespace Infrastructure.Data
             _orderItem.SaveChanges();
      
         }
+
+        //SoftDelete
+        public void SoftDeleteOrderItemRepository(OrderItem orderItem)
+        {
+            orderItem.Available = false;
+            _orderItem.SaveChanges();
+        }
+
+        //HardDelete
         public void DeleteOrderItemRepository(OrderItem orderItem)
         {
             _orderItem.OrderItems.Remove(orderItem);

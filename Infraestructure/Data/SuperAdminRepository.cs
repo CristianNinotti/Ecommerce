@@ -35,6 +35,14 @@ public class SuperAdminRepository : ISuperAdminRepository
         _context.SaveChanges();
     }
 
+    //SoftDelete
+    public void SoftDeleteSuperAdmin(SuperAdmin entity)
+    {
+       entity.Available = false;
+        _context.SaveChanges();
+    }
+
+    //HardDelete
     public void DeleteSuperAdmin(SuperAdmin entity)
     {
         _context.SuperAdmins.Remove(entity);

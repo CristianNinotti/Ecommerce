@@ -32,6 +32,7 @@ namespace Web.Controllers
         {
             return Ok(_categoryService.GetCategoryById(id));
         }
+
         [HttpGet("CategoryWithProducts/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public ActionResult<ProductResponse?> GetAllProducts([FromRoute] int id)

@@ -63,7 +63,7 @@ namespace Application.Services
                 return false;
             }
             MayoristaEntity.Available = false;
-            _mayoristaRepository.UpdateMayorista(MayoristaEntity);
+            _mayoristaRepository.SoftDeleteMayorista(MayoristaEntity);
             return true;
         }
 

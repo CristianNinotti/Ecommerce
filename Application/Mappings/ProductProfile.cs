@@ -50,6 +50,7 @@ namespace Application.Mappings
 
             }).ToList();
         }
+
         public static void ToProductUpdate(Product product, ProductRequest request)
         {
             product.Name = request.Name;

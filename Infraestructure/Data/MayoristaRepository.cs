@@ -1,6 +1,7 @@
 ﻿using Domain.Interfaces;
 using Infraestructure.Context;
 using Domain.Entities;
+using Infraestructure.Migrations;
 
 namespace Infraestructure.Data
 {
@@ -34,10 +35,20 @@ namespace Infraestructure.Data
             _mayorista.SaveChanges();
         }
 
+        //SoftDelete
+        public void SoftDeleteMayorista(Mayorista mayorista)
+        {
+            mayorista.Available = false;
+            _mayorista.SaveChanges();
+        }
+
+        //Hard Delete
         public void DeleteMayorista(Mayorista mayorista)
         {
             _mayorista.Mayoristas.Remove(mayorista);
             _mayorista.SaveChanges();
         }
+
+
     }
 }

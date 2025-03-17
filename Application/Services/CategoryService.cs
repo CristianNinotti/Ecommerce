@@ -10,10 +10,12 @@ namespace Application.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductRepository _productRepository;
 
-        public CategoryService (ICategoryRepository categoryRepository)
+        public CategoryService (ICategoryRepository categoryRepository, IProductRepository productRepository)
         {
             _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
         }
 
         public List<CategoryResponse> GetAllCategories()
@@ -50,18 +52,38 @@ namespace Application.Services
             return true;
         }
 
+        //Soft Delete
         public bool SoftDeleteCategory(int id)
         {
-            var CategoryEntity = _categoryRepository.GetCategoryById(id);
-            if(CategoryEntity == null)
+            var categoryEntity = _categoryRepository.GetCategoryById(id);
+
+            if (categoryEntity == null)
             {
                 return false;
             }
-            CategoryEntity.Available = false;
-            _categoryRepository.UpdateCategory(CategoryEntity);
+
+            // Marcar la categoría como eliminada
+            categoryEntity.Available = false;
+
+            // Obtener todos los productos asociados y marcarlos como eliminados
+            var products = _productRepository.GetProductsByCategoryId(id);
+            foreach (var product in products)
+            {
+                product.Available = false;
+            }
+
+            // Guardar cambios en la categoría (soft delete)
+            _categoryRepository.SoftDeleteCategory(categoryEntity);
+
+            // Guardar cambios en los productos (soft delete)
+            _productRepository.SoftDeleteProductsRepository(products);
+
             return true;
         }
 
+
+
+        //Hard Delete
         public bool HardDeleteCategory(int id)
         {
             var CategoryEntity = _categoryRepository.GetCategoryById(id);

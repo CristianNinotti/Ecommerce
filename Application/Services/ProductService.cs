@@ -36,16 +36,32 @@ namespace Application.Services
             return null;
         }
 
-        public void CreateProduct(ProductRequest product)
+        public IEnumerable<Product> GetProductsByCategoryId(int categoryId)
+        {
+            return _productRepository.GetProductsByCategoryId(categoryId);
+        }
+
+        public (bool success, string message) CreateProduct(ProductRequest product)
         {
             var category = _categoryRepository.GetCategoryById(product.CategoryId);
-            if (category != null && category.Available == true)
+
+            if (category == null)
             {
-                var productEntity = ProductProfile.ToProductEntity(product);
-                productEntity.Categoria = category;
-                _productRepository.CreateProductRepository(productEntity);
+                return (false, "La categoría no existe.");
             }
+
+            if (!category.Available)
+            {
+                return (false, "La categoría está eliminada y no puede usarse.");
+            }
+
+            var productEntity = ProductProfile.ToProductEntity(product);
+            productEntity.Categoria = category;
+            _productRepository.CreateProductRepository(productEntity);
+
+            return (true, "Producto creado con éxito.");
         }
+
         public bool ToUpdateProduct(int id, ProductRequest request)
         {
             var productEntity = _productRepository.GetProductByIdRepository(id);
@@ -61,21 +77,27 @@ namespace Application.Services
         }
         public bool SoftDeleteProduct(int id)
         {
-            var productEntity = _productRepository.GetProductByIdRepository(id);
-            if (productEntity == null)
-            {
-                return false;
-            }
-            productEntity.Available = false;
-            _productRepository.UpdateProductRepository(productEntity);
-            var orderItems = _orderItemRepository.GetAllOrderItemsByProductIdRepository(id);
-            foreach(var orderItem in orderItems)
-            {
-                orderItem.Available = false;
-                _orderItemRepository.UpdateOrderItemRepository(orderItem);
-            }
-            return true;
+
+                // Obtener el producto
+                var productEntity = _productRepository.GetProductByIdRepository(id);
+                if (productEntity == null)
+                {
+                    return false; 
+                }
+                productEntity.Available = false;
+                _productRepository.SoftDeleteProductsRepository(new List<Product> { productEntity });
+
+                var orderItems = _orderItemRepository.GetAllOrderItemsByProductIdRepository(id);
+                foreach (var orderItem in orderItems)
+                {
+                    orderItem.Available = false;
+                    _orderItemRepository.SoftDeleteOrderItemRepository(orderItem); 
+                }
+
+                return true;
+
         }
+
 
         public bool HardDeleteProduct(int id)
         {

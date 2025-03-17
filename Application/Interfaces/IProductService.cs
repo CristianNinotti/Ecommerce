@@ -1,5 +1,6 @@
 ﻿using Application.Models.Request;
 using Application.Models.Response;
+using Domain.Entities;
 
 namespace Application.Interfaces
 {
@@ -7,7 +8,8 @@ namespace Application.Interfaces
     {
         List<ProductResponse> GetAllProducts();
         ProductResponse? GetProductById(int id);
-        void CreateProduct(ProductRequest product);
+        IEnumerable<Product> GetProductsByCategoryId(int categoryId);
+        (bool success, string message) CreateProduct(ProductRequest product);
         bool ToUpdateProduct(int id, ProductRequest product);
         bool SoftDeleteProduct(int id);
         bool HardDeleteProduct(int id);

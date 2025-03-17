@@ -102,7 +102,7 @@ namespace Application.Services
                 return false;
             }
             orderItemEntity.Available = false;
-            _orderItemRepository.UpdateOrderItemRepository(orderItemEntity);
+            _orderItemRepository.SoftDeleteOrderItemRepository(orderItemEntity);
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderItemEntity.OrderId);
             if (orderEntity == null)
             {
@@ -112,7 +112,7 @@ namespace Application.Services
                 .Where(oi => oi.Available)
                 .Sum(oi => oi.TotalPrice);
             orderEntity.TotalAmount = updatedTotalAmount;
-            _orderRepository.UpdateOrderRepository(orderEntity);
+            _orderRepository.UpdateOrderRepository(orderEntity); // Ver
             return true;
         }
 

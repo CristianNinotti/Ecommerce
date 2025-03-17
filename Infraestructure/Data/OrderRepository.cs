@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
 using Infraestructure.Context;
+using Infraestructure.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
@@ -49,6 +50,14 @@ namespace Infrastructure.Data
 
         }
 
+        //SoftDelete
+        public void SoftDeleteOrderRepository(Order order)
+        {
+            order.OrderStatus = false;
+            _order.SaveChanges();
+        }
+
+        //HardDelete
         public void DeleteOrderRepository(Order order)
         {
             _order.Orders.Remove(order);

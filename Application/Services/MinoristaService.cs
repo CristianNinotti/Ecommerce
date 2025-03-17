@@ -57,7 +57,7 @@ namespace Application.Services
                 return false;
             }
             minoristaEntity.Available = false;
-            _minoristaRepository.UpdateMinorista(minoristaEntity);
+            _minoristaRepository.SoftDeleteMinorista(minoristaEntity);
             return true;
         }
 

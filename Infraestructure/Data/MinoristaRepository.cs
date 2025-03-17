@@ -35,6 +35,14 @@ namespace Infraestructure.Data
             _minorista.SaveChanges();
         }
 
+        //SoftDelete
+        public void SoftDeleteMinorista(Minorista minorista)
+        {
+            minorista.Available = false;
+            _minorista.SaveChanges();
+        }
+
+        //HardDelete
         public void DeleteMinorista (Minorista minorista)
         {
             _minorista.Minoristas.Remove(minorista);

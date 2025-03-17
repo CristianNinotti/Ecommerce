@@ -8,6 +8,7 @@ namespace Domain.Interfaces
         SuperAdmin? GetSuperAdminById(int id);
         void AddSuperAdmin(SuperAdmin entity);
         void UpdateSuperAdmin(SuperAdmin entity);
+        void SoftDeleteSuperAdmin(SuperAdmin entity);
         void DeleteSuperAdmin(SuperAdmin entity);
     }
 }

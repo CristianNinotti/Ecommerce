@@ -35,12 +35,47 @@ namespace Web.Controllers
                 return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
             }
         }
-        [HttpPost("Create Product")]
+
+        [HttpGet("ProductsByCategory/{categoryId}")]
+        [Authorize(Policy = "SuperAdminOnly")]
+        public IActionResult GetProductsByCategoryId([FromRoute] int categoryId)
+        {
+            try
+            {
+                // Llamar al servicio que obtiene los productos por CategoryId
+                var products = _productService.GetProductsByCategoryId(categoryId);
+
+                // Verificar si todos los productos tienen Available = false
+                if (products == null || !products.Any())
+                {
+                    return NotFound($"No se encontraron productos para la categoría con ID {categoryId}.");
+                }
+
+                // Si todos los productos están marcados como no disponibles, no mostrar la categoría
+                if (products.All(p => p.Available == false))
+                {
+                    return NotFound($"La categoría con ID {categoryId} no tiene productos disponibles.");
+                }
+
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Error al obtener productos para la categoría con ID {categoryId}. Error: {ex.Message}");
+            }
+        }
+
+
+        [HttpPost("CreateProduct")]
         public IActionResult CreateProduct([FromBody] ProductRequest product)
         {
-            _productService.CreateProduct(product);
-            return Ok("Producto Creado");
+            var (success, message) = _productService.CreateProduct(product);
+
+            if (!success) return BadRequest(new { success, message });
+
+            return Ok(new { success, message });
         }
+
         [HttpPut("UpdateProduct/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult UpdateProduct([FromRoute]int id, ProductRequest product)

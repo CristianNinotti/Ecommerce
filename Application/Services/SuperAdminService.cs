@@ -67,7 +67,7 @@ namespace Application.Services
             if (superAdmin != null)
             {
                 superAdmin.Available = false;
-                _superAdminRepository.UpdateSuperAdmin(superAdmin);
+                _superAdminRepository.SoftDeleteSuperAdmin(superAdmin);
                 return true;
             }
             return false;
