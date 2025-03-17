@@ -26,6 +26,15 @@ namespace Web.Controllers
             return Ok(_categoryService.GetAllCategories());
         }
 
+
+        [HttpGet("All Categories Available")]
+        [Authorize(Policy = "SuperAdminOnly")]
+        public IActionResult GetAllCategoriesAvailable()
+        {
+            var categories = _categoryService.GetAllCategories().Where(o=>o.Available);
+            return Ok(categories);
+        }
+
         [HttpGet("CategoryId/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public ActionResult<CategoryResponse?> GetCategoryById([FromRoute] int id)

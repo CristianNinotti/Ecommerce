@@ -14,7 +14,7 @@ namespace Application.Interfaces
         List<OrderItemResponse> GetAllOrderItemsByProductId(int id);
         OrderItemResponse? GetOrderItemById(int id);
         void CreateOrderItem(OrderItemRequest orderItem);
-        bool ToUpdateOrderItem(int userId, int  orderItemId, OrderItemRequest orderItem);
+        bool ToUpdateOrderItem(int  orderItemId, OrderItemRequest orderItem);
         bool SoftDeleteOrderItem(int id);
         bool HardDeleteOrderItem(int id);
     }

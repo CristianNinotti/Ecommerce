@@ -100,7 +100,7 @@ public class AuthenticationService : IAuthenticationService
             _options.Audience,
             claimsForToken,
             DateTime.UtcNow,
-            DateTime.UtcNow.AddMinutes(30),
+            DateTime.UtcNow.AddMinutes(60),
             credentials);
 
         var tokenToReturn = new JwtSecurityTokenHandler()

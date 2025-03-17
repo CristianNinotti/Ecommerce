@@ -22,6 +22,14 @@ namespace Web.Controllers
             return Ok(orderItems);
         }
 
+        [HttpGet("AllOrdersItemsAvailable")]
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+        public IActionResult GetAllOrderItemsAvailable()
+        {
+            var orderItems = _orderItemService.GetAllOrderItems().Where(o=>o.Available);
+            return Ok(orderItems);
+        }
+
         [HttpGet("OrderItemById/{id}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult OrderItemById([FromRoute] int id)
@@ -53,17 +61,10 @@ namespace Web.Controllers
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult UpdateOrderItem([FromRoute]int orderItemId, [FromBody] OrderItemRequest orderItem)
         {
-            string? userIdClaim = User.FindFirst("Id")?.Value;
-            
-            if (userIdClaim == null)
-            {
-                return BadRequest("No esta logueado");
-            }
-            int userId = int.Parse(userIdClaim);
 
             try
             {
-                var updateSuccess = _orderItemService.ToUpdateOrderItem(userId, orderItemId, orderItem);
+                var updateSuccess = _orderItemService.ToUpdateOrderItem(orderItemId, orderItem);
 
                 // Verifica si la actualización fue exitosa
                 if (updateSuccess)

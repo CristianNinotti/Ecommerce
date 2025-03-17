@@ -25,6 +25,15 @@ namespace Web.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("AllOrdersStatusTrue")]
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+
+        public IActionResult GetAllOrdersStatusTrue()
+        {
+            var orders = _orderService.GetAllOrders().Where(o=>o.OrderStatus);
+            return Ok(orders);
+        }
+
         [HttpGet("OrderById/{id}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
 

@@ -14,11 +14,20 @@ namespace Web.Controllers
         {
             _minoristaService = minoristaService;
         }
-        [HttpGet("All Minorista")]
+        [HttpGet("All Minoristas")]
         [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult GetAllMinoristas()
         {
             return Ok(_minoristaService.GetAllMinorista());
+
+        }
+
+        [HttpGet("All Minoristas Available")]
+        [Authorize(Policy = "MinoristaOrSuperAdmin")]
+        public IActionResult GetAllMinoristasAvailable()
+        {
+            var minoristas = _minoristaService.GetAllMinorista().Where(o => o.Available);
+            return Ok(minoristas);
 
         }
         [HttpPost("Create Minorista")]
@@ -47,12 +56,20 @@ namespace Web.Controllers
         {
             try
             {
-                _minoristaService.SoftDeleteMinorista(id);
-                return Ok("Minorista Borrado");
+                var result = _minoristaService.SoftDeleteMinorista(id);
+                if (!result)
+                {
+                    throw new InvalidOperationException($"Minorista con ID {id} no encontrado.");
+                }
+                return Ok("Minorista deshabilitado correctamente.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                return NotFound($"Minorista con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error inesperado: {ex.Message}");
             }
         }
 

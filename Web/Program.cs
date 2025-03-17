@@ -58,6 +58,8 @@ builder.Services.AddAuthentication("Bearer")
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
+                    ValidateLifetime = true, // Valida el tiempo de vida del token
+                    ClockSkew = TimeSpan.Zero, // Elimina la tolerancia por defecto de 5 minutos del token
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["AuthenticationServiceOptions:Issuer"],
                     ValidAudience = builder.Configuration["AuthenticationServiceOptions:Audience"],
@@ -113,6 +115,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserAvailableService, UserAvailableService>();
 #endregion
 
 // Configuración de repositorios de aplicación e infraestructura
@@ -128,6 +131,7 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 #endregion
 
 
+
 var app = builder.Build();
 
 
@@ -137,6 +141,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Configuración de Middleware previo al uso de controladores
+
+app.UseMiddleware<UserValidationMiddleware>();
 
 app.UseHttpsRedirection();
 

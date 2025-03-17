@@ -17,15 +17,29 @@ public class SuperAdminController : ControllerBase
         _superAdminService = superAdminService;
     }
 
-    [HttpGet]
+    [HttpGet("All SuperAdmins")]
     [Authorize(Policy = "SuperAdminOnly")]
     public IActionResult GetAllSuperAdmin()
     {
         var response = _superAdminService.GetAllSuperAdmins();
 
-        if (response.Count is 0)
+        if (response.Any())
         {
-            return NotFound("SuperAdmin not found");
+            return NotFound("SuperAdmins not found");
+        }
+
+        return Ok(response);
+    }
+
+    [HttpGet("All SuperAdmins Available")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public IActionResult GetAllSuperAdminAvailable()
+    {
+        var response = _superAdminService.GetAllSuperAdmins().Where(o=> o.Available);
+
+        if (response.Any())
+        {
+            return NotFound("SuperAdmins not found");
         }
 
         return Ok(response);

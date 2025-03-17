@@ -23,7 +23,7 @@ namespace Infrastructure.Data
                 {
                     Id = o.Id,
                     OrderDate = o.OrderDate,
-                    TotalAmount = o.OrderItems.Sum(oi => oi.TotalPrice), // Calculamos aquí
+                    TotalAmount = o.OrderItems.Where(oi => oi.Available).Sum(oi => oi.TotalPrice),
                     OrderStatus = o.OrderStatus,
                     UserId = o.UserId,
                     OrderItems = o.OrderItems

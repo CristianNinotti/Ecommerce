@@ -68,14 +68,14 @@ namespace Application.Services
             }
         }
 
-        public bool ToUpdateOrderItem(int userId, int orderItemId, OrderItemRequest request)
+        public bool ToUpdateOrderItem(int orderItemId, OrderItemRequest request)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(request.OrderId);
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(orderItemId);
             var product = _productRepository.GetProductByIdRepository(request.ProductId);
-            var mayoristaEntity = _mayoristaRepository.GetMayoristaById(userId);
-            if (orderEntity != null && orderItemEntity != null && userId == orderEntity.UserId && product != null && orderEntity.OrderStatus == true && product.Available == true)
+            if (orderEntity != null && orderItemEntity != null && product != null && orderEntity.OrderStatus == true && product.Available == true)
             {
+                var mayoristaEntity = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
                 var stockDisponible = product.Stock + orderItemEntity.Quantity;
                 if (request.Quantity <= stockDisponible)
                 {
@@ -112,7 +112,7 @@ namespace Application.Services
                 .Where(oi => oi.Available)
                 .Sum(oi => oi.TotalPrice);
             orderEntity.TotalAmount = updatedTotalAmount;
-            _orderRepository.UpdateOrderRepository(orderEntity); // Ver
+            _orderRepository.UpdateOrderRepository(orderEntity);
             return true;
         }
 

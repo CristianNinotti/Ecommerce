@@ -21,6 +21,15 @@ namespace Web.Controllers
             var products = _productService.GetAllProducts();
             return Ok(products);
         }
+
+        [HttpGet("All Products Available")]
+        [Authorize(Policy = "SuperAdminOnly")]
+        public IActionResult GetAllProductsAvailable()
+        {
+            var products = _productService.GetAllProducts().Where(o=>o.Available);
+            return Ok(products);
+        }
+
         [HttpGet("ProductById/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult GetProductById([FromRoute]int id)

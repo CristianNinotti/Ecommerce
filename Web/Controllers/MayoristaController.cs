@@ -23,6 +23,15 @@ namespace Web.Controllers
             return Ok(_mayoristaService.GetAllMayoristas());
         }
 
+
+        [HttpGet("All Mayoristas Available")]
+        [Authorize(Policy = "MayoristaOrSuperAdmin")]
+        public IActionResult GetAllMayoristasAvailable()
+        {
+            var mayoristas = _mayoristaService.GetAllMayoristas().Where(o => o.Available);
+            return Ok(mayoristas);
+        }
+
         [HttpPost("Create Mayorista")]
         public IActionResult CreateMayorista([FromBody] MayoristaRequest mayorista)
         {
