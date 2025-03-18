@@ -83,12 +83,13 @@ public class SuperAdminController : ControllerBase
     {
         try
         {
-            var sAdmin = _superAdminService.CreateSuperAdmin(superAdmin);
-            if (!sAdmin)
-            {
-                return BadRequest($"No se pudo crear al SuperAdmin");
-            }
+            _superAdminService.CreateSuperAdmin(superAdmin);
+
             return Ok($"SuperAdmin creado con exito");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest($"No se pudo crear el SuperAdmin");
         }
         catch (ArgumentException ex)
         {
