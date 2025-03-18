@@ -23,7 +23,20 @@ namespace Web.Controllers
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult GetAllCategories()
         {
-            return Ok(_categoryService.GetAllCategories());
+            try
+            {
+                var categories = _categoryService.GetAllCategories();
+                if (!categories.Any())
+                {
+                    return BadRequest($"No se encontraron Categy en el sistema");
+                }
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
 
@@ -31,55 +44,159 @@ namespace Web.Controllers
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult GetAllCategoriesAvailable()
         {
-            var categories = _categoryService.GetAllCategories().Where(o=>o.Available);
-            return Ok(categories);
+            try
+            {
+                var categories = _categoryService.GetAllCategories().Where(o => o.Available);
+                if (!categories.Any())
+                {
+                    return BadRequest($"No se encontraron Category habilitados en el sistema");
+                }
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
         [HttpGet("CategoryId/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public ActionResult<CategoryResponse?> GetCategoryById([FromRoute] int id)
         {
-            return Ok(_categoryService.GetCategoryById(id));
+            try
+            {
+                var category = _categoryService.GetCategoryById(id);
+                if (category == null)
+                {
+                    return BadRequest($"No se pudo encontrar Category en el sistema");
+                }
+                return Ok(category);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
         [HttpGet("CategoryWithProducts/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public ActionResult<ProductResponse?> GetAllProducts([FromRoute] int id)
         {
-            // Filtra los productos por CategoryId
-            var productInCategory = _productService.GetAllProducts().Where(m => m.CategoryId == id).ToList();
+            try
+            {
+                var productInCategory = _productService.GetAllProducts().Where(m => m.CategoryId == id).ToList();
+                if (!productInCategory.Any())
+                {
+                    return BadRequest($"No se encontraron productos en ese Category");
+                }
+                return Ok(productInCategory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
 
-            return Ok(productInCategory);
         }
 
         [HttpPost("CreateCategory")]
 
         public IActionResult CreateCategory([FromBody] CategoryRequest request)
         {
-            _categoryService.CreateCategory(request);
-            return Ok();
+            try
+            {
+                _categoryService.CreateCategory(request);
+                return Ok($"Category creado con exito");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest($"No se pudo crear Category con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
         }
 
         [HttpPut("UpdateCategory/{id}")]
-        [Authorize(Policy="SuperAdminOnly")]
+        [Authorize(Policy = "SuperAdminOnly")]
 
-        public ActionResult<bool> UpdateCategory([FromRoute]int id ,[FromBody] CategoryRequest request)
+        public ActionResult<bool> UpdateCategory([FromRoute] int id, [FromBody] CategoryRequest request)
         {
-            
-            return Ok(_categoryService.UpdateCategory(id, request));
+            try
+            {
+                var category = _categoryService.UpdateCategory(id, request);
+                if (!category)
+                {
+                    return BadRequest($"No se pudo actualizar Category");
+                }
+                return Ok($"Category actualizado con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
         [HttpDelete("SoftDeleteCategory/{id}")]
-        [Authorize(Policy ="SuperAdminOnly")]
-        public ActionResult<bool> SoftDeleteCategory([FromRoute]int id)
+        [Authorize(Policy = "SuperAdminOnly")]
+        public ActionResult<bool> SoftDeleteCategory([FromRoute] int id)
         {
-            return Ok(_categoryService.SoftDeleteCategory(id));
+            try
+            {
+                var category = _categoryService.SoftDeleteCategory(id);
+                if (!category)
+                {
+                    return BadRequest($"No se pudo dar de baja Category del sistema");
+                }
+                return Ok($"Category dado de baja del sistema con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
         [HttpDelete("HardDeleteCategory/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
         public ActionResult<bool> HardDeleteCategory([FromRoute] int id)
         {
-            return Ok(_categoryService.HardDeleteCategory(id));
+            try
+            {
+                var category = _categoryService.HardDeleteCategory(id);
+                if (!category)
+                {
+                    return BadRequest($"No se pudo borrar esa Category del sistema");
+                }
+                return Ok($"Category borrado del sistema con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Web.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        public ProductController (IProductService productService)
+        public ProductController(IProductService productService)
         {
             _productService = productService;
         }
@@ -18,30 +18,60 @@ namespace Web.Controllers
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult GetAllProducts()
         {
-            var products = _productService.GetAllProducts();
-            return Ok(products);
+            try
+            {
+                var products = _productService.GetAllProducts();
+                if (!products.Any())
+                {
+                    return NotFound("No se encontraron productos.");
+                }
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
         }
 
         [HttpGet("All Products Available")]
         [Authorize(Policy = "SuperAdminOnly")]
         public IActionResult GetAllProductsAvailable()
         {
-            var products = _productService.GetAllProducts().Where(o=>o.Available);
-            return Ok(products);
+            try
+            {
+                var products = _productService.GetAllProducts().Where(o => o.Available);
+                if (!products.Any())
+                {
+                    return NotFound("No se encontraron productos.");
+                }
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
         }
 
         [HttpGet("ProductById/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
-        public IActionResult GetProductById([FromRoute]int id)
+        public IActionResult GetProductById([FromRoute] int id)
         {
             try
             {
                 var product = _productService.GetProductById(id);
+                if (product == null)  // Si es nulo, da BadRequest
+                {
+                    return BadRequest($"No se pudo encontrar el producto.");
+                }
                 return Ok(product);
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)  // Si se detecta un error esperado o un mal parametro de entrada
             {
-                return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)  // Para errores internos inesperados
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -51,26 +81,25 @@ namespace Web.Controllers
         {
             try
             {
-                // Llamar al servicio que obtiene los productos por CategoryId
                 var products = _productService.GetProductsByCategoryId(categoryId);
-
-                // Verificar si todos los productos tienen Available = false
-                if (products == null || !products.Any())
+                if (!products.Any())
                 {
-                    return NotFound($"No se encontraron productos para la categoría con ID {categoryId}.");
+                    return BadRequest($"No se encontraron Products asociados a esa categoria.");
                 }
-
-                // Si todos los productos están marcados como no disponibles, no mostrar la categoría
                 if (products.All(p => p.Available == false))
                 {
-                    return NotFound($"La categoría con ID {categoryId} no tiene productos disponibles.");
+                    return BadRequest($"La categoría no tiene Products disponibles.");
                 }
 
                 return Ok(products);
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                return NotFound($"Error al obtener productos para la categoría con ID {categoryId}. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -78,39 +107,72 @@ namespace Web.Controllers
         [HttpPost("CreateProduct")]
         public IActionResult CreateProduct([FromBody] ProductRequest product)
         {
-            var (success, message) = _productService.CreateProduct(product);
+            try
+            {
+                var (success, message) = _productService.CreateProduct(product);
 
-            if (!success) return BadRequest(new { success, message });
+                if (!success)
+                {
+                    return BadRequest(new { success, message });
+                }
+                return Ok(new { success, message });
 
-            return Ok(new { success, message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
         [HttpPut("UpdateProduct/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
-        public IActionResult UpdateProduct([FromRoute]int id, ProductRequest product)
+        public IActionResult UpdateProduct([FromRoute] int id, [FromBody] ProductRequest product)
         {
             try
             {
                 var UpdatedProduct = _productService.ToUpdateProduct(id, product);
+                if (!UpdatedProduct)
+                {
+                    return BadRequest($"No se pudo actualizar el producto");
+                }
                 return Ok(UpdatedProduct);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpDelete("SoftDeleteProduct/{id}")]
         [Authorize(Policy = "SuperAdminOnly")]
-        public IActionResult SoftDeleteProduct([FromRoute]int id)
+        public IActionResult SoftDeleteProduct([FromRoute] int id)
         {
             try
             {
-                _productService.SoftDeleteProduct(id);
+                var product = _productService.SoftDeleteProduct(id);
+                if (!product)
+                {
+                    return BadRequest("$No se pudo dar de baja del sistema");
+                }
                 return Ok("Producto Eliminado");
             }
+
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+
             catch (Exception ex)
             {
-                return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -120,12 +182,22 @@ namespace Web.Controllers
         {
             try
             {
-                _productService.HardDeleteProduct(id);
+                var product = _productService.HardDeleteProduct(id);
+                if (!product)
+                {
+                    return BadRequest($"No se pudo borrar del sistema");
+                }
                 return Ok("Producto Eliminado");
             }
+
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+
             catch (Exception ex)
             {
-                return NotFound($"Producto con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
     }

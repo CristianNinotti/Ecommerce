@@ -20,7 +20,20 @@ namespace Web.Controllers
         [Authorize(Policy = "MayoristaOrSuperAdmin")]
         public IActionResult GetAllMayoristas()
         {
-            return Ok(_mayoristaService.GetAllMayoristas());
+            try
+            {
+                var mayoristas = _mayoristaService.GetAllMayoristas();
+                if (!mayoristas.Any())
+                {
+                    return BadRequest($"No se encontro ningun Mayorista registrado en el sistema");
+                }
+                return Ok(mayoristas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
 
@@ -28,8 +41,20 @@ namespace Web.Controllers
         [Authorize(Policy = "MayoristaOrSuperAdmin")]
         public IActionResult GetAllMayoristasAvailable()
         {
-            var mayoristas = _mayoristaService.GetAllMayoristas().Where(o => o.Available);
-            return Ok(mayoristas);
+            try
+            {
+                var mayoristas = _mayoristaService.GetAllMayoristas().Where(o => o.Available);
+                if (!mayoristas.Any())
+                {
+                    return BadRequest($"No se encontro ningun Mayorista habilitado en el sistema");
+                }
+                return Ok(mayoristas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
         }
 
         [HttpPost("CreateMayorista")]
@@ -38,11 +63,19 @@ namespace Web.Controllers
             try
             {
                 _mayoristaService.CreateMayorista(mayorista);
-                return Ok("Mayorista Creado");
+                return Ok("Mayorista Creado con exito");
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest($"No se pudo crear al Mayorista");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -52,8 +85,16 @@ namespace Web.Controllers
         {
             try
             {
-                var MayoristaUpdated = _mayoristaService.UpdateMayorista(id, mayorista);
-                return Ok(MayoristaUpdated);
+                var mayoristaUpdated = _mayoristaService.UpdateMayorista(id, mayorista);
+                if (!mayoristaUpdated)
+                {
+                    return BadRequest($"No se pudo actualizar al Mayorista");
+                }
+                return Ok($"Mayorista actualizado con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (KeyNotFoundException ex)
             {
@@ -61,7 +102,7 @@ namespace Web.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = ex.Message }); // Mensaje claro si el nombre de cuenta o email ya están en uso
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -72,16 +113,24 @@ namespace Web.Controllers
 
         [HttpDelete("SoftDelete/{id}")]
         [Authorize(Policy = "MayoristaOrSuperAdmin")]
-        public IActionResult SoftDeleteMayorista([FromRoute]int id)
+        public IActionResult SoftDeleteMayorista([FromRoute] int id)
         {
             try
             {
-                _mayoristaService.SoftDeleteMayorista(id);
-                return Ok("Mayorista Borrado");
+                var mayorista = _mayoristaService.SoftDeleteMayorista(id);
+                if (!mayorista)
+                {
+                    return BadRequest($"No se pudo dar de baja al Mayorista");
+                }
+                return Ok("Mayorista dado de baja con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Mayorista con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpDelete("HardDelete/{id}")]
@@ -90,12 +139,20 @@ namespace Web.Controllers
         {
             try
             {
-                _mayoristaService.HardDeleteMayorista(id);
-                return Ok("Mayorista Borrado");
+                var mayorista = _mayoristaService.HardDeleteMayorista(id);
+                if (!mayorista)
+                {
+                    return BadRequest($"No se pudo borrar al Mayorista del sistema");
+                }
+                return Ok("Mayorista borrado con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Mayorista con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
     }

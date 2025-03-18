@@ -1,8 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
 using Application.Models.Response;
-using Application.Services;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,14 +21,19 @@ public class SuperAdminController : ControllerBase
     [Authorize(Policy = "SuperAdminOnly")]
     public IActionResult GetAllSuperAdmin()
     {
-        var response = _superAdminService.GetAllSuperAdmins();
-
-        if (!response.Any()) // Cambio aquí: !response.Any() en lugar de response.Any()
+        try
         {
-            return NotFound("SuperAdmins not found");
+            var response = _superAdminService.GetAllSuperAdmins();
+            if (!response.Any())
+            {
+                return BadRequest($"No se encontraron SuperAdmins registrados");
+            }
+            return Ok(response);
         }
-
-        return Ok(response);
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+        }
     }
 
     [HttpGet("All SuperAdmins Available")]
@@ -39,12 +42,19 @@ public class SuperAdminController : ControllerBase
     {
         var response = _superAdminService.GetAllSuperAdmins().Where(o => o.Available);
 
-        if (!response.Any()) // Cambio aquí también
-        {
-            return NotFound("SuperAdmins not found");
-        }
 
-        return Ok(response);
+        try
+        {
+            if (!response.Any())
+            {
+                return BadRequest($"No se encontraron SuperAdmins habilitados.");
+            }
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+        }
     }
 
 
@@ -52,27 +62,41 @@ public class SuperAdminController : ControllerBase
     [Authorize(Policy = "SuperAdminOnly")]
     public ActionResult<SuperAdminResponse?> GetSuperAdminById([FromRoute] int id)
     {
-        var response = _superAdminService.GetSuperAdminById(id);
 
-        if (response is null)
+        try
         {
-            return NotFound("SuperAdmin not found");
+            var response = _superAdminService.GetSuperAdminById(id);
+            if (response == null)
+            {
+                return BadRequest("No se encontro ese SuperAdmin");
+            }
+            return Ok(response);
         }
-
-        return Ok(response);
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+        }
     }
 
     [HttpPost]
     public IActionResult CreateSuperAdmin([FromBody] SuperAdminRequest superAdmin)
     {
-        try 
-        { 
-        _superAdminService.CreateSuperAdmin(superAdmin);
-        return Ok("Usuario Creado");
-        }
-        catch (InvalidOperationException ex)
+        try
         {
-            return BadRequest(new { message = ex.Message });
+            var sAdmin = _superAdminService.CreateSuperAdmin(superAdmin);
+            if (!sAdmin)
+            {
+                return BadRequest($"No se pudo crear al SuperAdmin");
+            }
+            return Ok($"SuperAdmin creado con exito");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
         }
     }
 
@@ -82,34 +106,68 @@ public class SuperAdminController : ControllerBase
     {
         try
         {
-            var SuperAdminUpdated = _superAdminService.UpdateSuperAdmin(id, superAdmin);
-            return Ok(SuperAdminUpdated);
+            var sAdmin = _superAdminService.UpdateSuperAdmin(id, superAdmin);
+            if (!sAdmin)
+            {
+                return BadRequest($"No se pudo actualizar al SuperAdmin");
+            }
+            return Ok($"SuperAdmin actualizado con exito");
         }
-        catch (KeyNotFoundException ex)
+        catch (ArgumentException ex)
         {
-            return NotFound(new { message = $"Mayorista con ID {id} no encontrado. Error: {ex.Message}" }); // Específico para no encontrado
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message }); // Mensaje claro si el nombre de cuenta o email ya están en uso
+            return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Ha ocurrido un error inesperado", detail = ex.Message }); // Captura de errores generales
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
         }
+
     }
 
     [HttpDelete("SoftDeleteAdmin/{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
     public ActionResult<bool> SoftDeleteSuperAdmin([FromRoute] int id)
     {
-        return Ok(_superAdminService.SoftDeleteSuperAdmin(id));
+        try
+        {
+            var sAdmin = _superAdminService.SoftDeleteSuperAdmin(id);
+            if (!sAdmin)
+            {
+                return BadRequest($"No se encontro al SuperAdmin");
+            }
+            return Ok($"SuperAdmin dado de baja con exito");
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+        }
+
     }
 
     [HttpDelete("HardDeleteAdmin/{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
     public ActionResult<bool> HardDeleteSuperAdmin([FromRoute] int id)
     {
-        return Ok(_superAdminService.HardDeleteSuperAdmin(id));
+        try
+        {
+            var sAdmin = _superAdminService.HardDeleteSuperAdmin(id);
+            if (!sAdmin)
+            {
+                return BadRequest("$No se pudo borrar al SuperAdmin del sistema");
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+        }
+        return Ok();
     }
 }

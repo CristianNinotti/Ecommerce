@@ -18,16 +18,42 @@ namespace Web.Controllers
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult GetAllOrderItems()
         {
-            var orderItems = _orderItemService.GetAllOrderItems();
-            return Ok(orderItems);
+            try
+            {
+                var orderItems = _orderItemService.GetAllOrderItems();
+                if (!orderItems.Any())
+                {
+                    return BadRequest($"No hay orderItems registrados en el sistema");
+                }
+                return Ok(orderItems);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
         }
 
         [HttpGet("AllOrdersItemsAvailable")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult GetAllOrderItemsAvailable()
         {
-            var orderItems = _orderItemService.GetAllOrderItems().Where(o=>o.Available);
-            return Ok(orderItems);
+            try
+            {
+                var orderItems = _orderItemService.GetAllOrderItems().Where(o => o.Available);
+                if (!orderItems.Any())
+                {
+                    return BadRequest($"No se encontraron OrderItems habilitados en el sistema");
+                }
+                return Ok(orderItems);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
         }
 
         [HttpGet("OrderItemById/{id}")]
@@ -37,11 +63,19 @@ namespace Web.Controllers
             try
             {
                 var orderItem = _orderItemService.GetOrderItemById(id);
+                if (orderItem == null)
+                {
+                    return BadRequest($"No se encontro esa OrderItem");
+                }
                 return Ok(orderItem);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpPost("CreateOrderItem")]
@@ -50,36 +84,43 @@ namespace Web.Controllers
             try
             {
                 _orderItemService.CreateOrderItem(orderItem);
-                return Ok("Orden Creada");
+                return Ok("OrderItem Creado con exito");
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = "No hay stock suficiente para la cantidad solicitada. " + ex.Message }); // 400 Bad Request si no hay stock (Hace referencia a la validacion del servicio)
+                return BadRequest($"No se pudo crear el OrderItem");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpPut("UpdateOrderItem/{orderItemId}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
-        public IActionResult UpdateOrderItem([FromRoute]int orderItemId, [FromBody] OrderItemRequest orderItem)
+        public IActionResult UpdateOrderItem([FromRoute] int orderItemId, [FromBody] OrderItemRequest orderItem)
         {
 
             try
             {
                 var updateSuccess = _orderItemService.ToUpdateOrderItem(orderItemId, orderItem);
 
-                // Verifica si la actualización fue exitosa
-                if (updateSuccess)
+                if (!updateSuccess)
                 {
-                    return Ok("OrderItem actualizado correctamente.");
+                    return BadRequest($"No se pudo actualizar el OrderItem");
                 }
-                else
-                {
-                    return NotFound($"Este ID {orderItemId} no corresponde a tu usuario.");
-                }
+                return Ok($"OrderItem actualizado con exito");
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
-                // Capturamos específicamente errores relacionados con la validación de stock
-                return BadRequest($"No hay stock suficiente para la cantidad solicitada. Error: {ex.Message}");
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -89,12 +130,20 @@ namespace Web.Controllers
         {
             try
             {
-                _orderItemService.SoftDeleteOrderItem(id);
-                return Ok("Orden Eliminada");
+                var orderItem = _orderItemService.SoftDeleteOrderItem(id);
+                if (!orderItem)
+                {
+                    return BadRequest($"No se pudo dar de baja el OrderItem");
+                }
+                return Ok("OrderItem dado de baja con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -104,12 +153,20 @@ namespace Web.Controllers
         {
             try
             {
-                _orderItemService.HardDeleteOrderItem(id);
-                return Ok("Orden Eliminada");
+                var orderItem = _orderItemService.HardDeleteOrderItem(id);
+                if (!orderItem)
+                {
+                    return BadRequest($"No se pudo borrar el OrderItem");
+                }
+                return Ok("OrderItem borrado del sistema con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
     }

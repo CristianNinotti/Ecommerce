@@ -20,7 +20,20 @@ namespace Web.Controllers
         [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult GetAllMinoristas()
         {
-            return Ok(_minoristaService.GetAllMinorista());
+            try
+            {
+                var minoristas = _minoristaService.GetAllMinorista();
+                if (!minoristas.Any())
+                {
+                    return BadRequest($"No hay ningun Minorista registrado en el sistema");
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
 
         }
 
@@ -28,8 +41,20 @@ namespace Web.Controllers
         [Authorize(Policy = "MinoristaOrSuperAdmin")]
         public IActionResult GetAllMinoristasAvailable()
         {
-            var minoristas = _minoristaService.GetAllMinorista().Where(o => o.Available);
-            return Ok(minoristas);
+            try
+            {
+                var minoristas = _minoristaService.GetAllMinorista().Where(o => o.Available);
+                if (!minoristas.Any())
+                {
+                    return BadRequest($"No hay ningun Minorista habilitado en el sistema");
+                }
+                return Ok(minoristas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
 
         }
         [HttpPost("Create Minorista")]
@@ -42,7 +67,15 @@ namespace Web.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest($"No se pudo crear al Minorista");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpPut("UpdateMinorista/{id}")]
@@ -51,20 +84,20 @@ namespace Web.Controllers
         {
             try
             {
-                var MinoristaUpdated = _minoristaService.UpdateMinorista(id, minorista);
-                return Ok(MinoristaUpdated);
+                var updatedMinorista = _minoristaService.UpdateMinorista(id, minorista);
+                if (!updatedMinorista)
+                {
+                    return BadRequest($"No se pudo actualizar Minorista");
+                }
+                return Ok($"Minorista actualizado con exito");
             }
-            catch (KeyNotFoundException ex)
+            catch (ArgumentException ex)
             {
-                return NotFound(new { message = $"Mayorista con ID {id} no encontrado. Error: {ex.Message}" }); // Específico para no encontrado
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message }); // Mensaje claro si el nombre de cuenta o email ya están en uso
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Ha ocurrido un error inesperado", detail = ex.Message }); // Captura de errores generales
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpDelete("SoftDeleteMinorista/{id}")]
@@ -73,20 +106,20 @@ namespace Web.Controllers
         {
             try
             {
-                var result = _minoristaService.SoftDeleteMinorista(id);
-                if (!result)
+                var minorista = _minoristaService.SoftDeleteMinorista(id);
+                if (!minorista)
                 {
-                    throw new InvalidOperationException($"Minorista con ID {id} no encontrado.");
+                    return BadRequest($"No se pudo dar de baja Minorista");
                 }
-                return Ok("Minorista deshabilitado correctamente.");
+                return Ok("Minorista dado de baja con exito.");
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Error inesperado: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -96,12 +129,20 @@ namespace Web.Controllers
         {
             try
             {
-                _minoristaService.HardDeleteMinorista(id);
-                return Ok("Minorista Borrado");
+                var minorista = _minoristaService.HardDeleteMinorista(id);
+                if (!minorista)
+                {
+                    return BadRequest($"No se pudo borrar Minorista del sistema");
+                }
+                return Ok("Minorista borrado del sistema con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Minorista con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
     }

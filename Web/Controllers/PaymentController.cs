@@ -3,6 +3,7 @@ using Application.Models.Request;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace Web.Controllers
@@ -19,21 +20,38 @@ namespace Web.Controllers
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
         public IActionResult GetAllPayments()
         {
-            var payments = _paymentService.GetAllPayments();
-            return Ok(payments);
-        }
-        [HttpGet("PaymentById/{paymentId}")]
-        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
-        public IActionResult GetByPayment([FromRoute]int paymentId)
-        {
             try
             {
-                var payment = _paymentService.GetPaymentById(paymentId);
-                return Ok(payment);
+                var response = _paymentService.GetAllPayments();
+                if (!response.Any())
+                {
+                    return BadRequest($"No se encontraron pagos registrados en el sistema");
+                }
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {paymentId} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
+
+        }
+        [HttpGet("PaymentById/{paymentId}")]
+        [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
+        public IActionResult GetByPayment([FromRoute] int paymentId)
+        {
+            try
+            {
+                var response = _paymentService.GetPaymentById(paymentId);
+                if (response == null)
+                {
+                    return BadRequest($"No se pudo encontrar el pago");
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -43,16 +61,20 @@ namespace Web.Controllers
         {
             try
             {
-                bool paymentCreated = _paymentService.CreatePayment(request);
+                var paymentCreated = _paymentService.CreatePayment(request);
                 if (!paymentCreated)
                 {
-                    throw new InvalidOperationException("El pago no pudo ser creado.");
+                    return BadRequest("No se pudo crear el pago.");
                 }
-                return Ok("Pago creado con éxito");
+                return Ok("Pago creado con exito");
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest(new { Message = "No se pudo crear el pago solicitado. " + ex.Message });
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
         [HttpPut("UpdatePayment/{paymentId}")]
@@ -61,12 +83,20 @@ namespace Web.Controllers
         {
             try
             {
-                _paymentService.ToUpdatePayment(paymentId, request);
-                return Ok("Payment Actualizado");
+                var payment = _paymentService.ToUpdatePayment(paymentId, request);
+                if (!payment)
+                {
+                    return BadRequest($"No se pudo actualizar el pago.");
+                }
+                return Ok("Pago Actualizado");
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest(new { Message = "No se pudo actualizar el pago solicitado. " + ex.Message });
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 

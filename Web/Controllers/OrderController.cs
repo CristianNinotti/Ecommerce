@@ -2,6 +2,7 @@
 using Application.Models.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata;
 
 namespace Web.Controllers
 {
@@ -21,8 +22,21 @@ namespace Web.Controllers
 
         public IActionResult GetAllOrders()
         {
-            var orders = _orderService.GetAllOrders();
-            return Ok(orders);
+            try
+            {
+                var orders = _orderService.GetAllOrders();
+                if (!orders.Any())
+                {
+                    return BadRequest($"No se encontraron Orders registradas en el sistema.");
+                }
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
+
+
         }
 
         [HttpGet("AllOrdersStatusTrue")]
@@ -30,8 +44,19 @@ namespace Web.Controllers
 
         public IActionResult GetAllOrdersStatusTrue()
         {
-            var orders = _orderService.GetAllOrders().Where(o=>o.OrderStatus);
-            return Ok(orders);
+            try
+            {
+                var orders = _orderService.GetAllOrders().Where(o => o.OrderStatus);
+                if (!orders.Any())
+                {
+                    return BadRequest($"No se encontraron Orders habilitadas en el sistema");
+                }
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
+            }
         }
 
         [HttpGet("OrderById/{id}")]
@@ -42,11 +67,19 @@ namespace Web.Controllers
             try
             {
                 var order = _orderService.GetOrderById(id);
+                if (order == null)
+                {
+                    return BadRequest($"No se encontro el Order");
+                }
                 return Ok(order);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -57,18 +90,26 @@ namespace Web.Controllers
             try
             {
                 _orderService.CreateOrder(orderRequest);
-                return Ok("Orden Creada");
+                return Ok("Orden creado con exito");
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { message = "Error al crear la orden. " + ex.Message });
+                return BadRequest($"No se puede crear la Order");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
         [HttpPut("UpdateOrder/{orderId}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
 
-        public IActionResult UpdateOrder([FromRoute] int orderId, [FromBody]  OrderRequest orderRequest)
+        public IActionResult UpdateOrder([FromRoute] int orderId, [FromBody] OrderRequest orderRequest)
         {
             string? userIdClaim = User.FindFirst("Id")?.Value;
 
@@ -80,20 +121,22 @@ namespace Web.Controllers
 
             try
             {
-                var updateSuccess = _orderService.ToUpdateOrder(userId, orderId , orderRequest);
+                var updateSuccess = _orderService.ToUpdateOrder(userId, orderId, orderRequest);
 
-                if (updateSuccess)
+                if (!updateSuccess)
                 {
-                    return Ok("Orden actualizada correctamente.");
+                    return BadRequest($"No se pudo actualizar la Order");
                 }
-                else
-                {
-                    return NotFound($"Orden con ID {orderId} no encontrada.");
-                }
+
+                return Ok($"Order actualizada con exito");
             }
-            catch (InvalidOperationException ex)
+            catch (ArgumentException ex)
             {
-                return BadRequest($"Error al actualizar la orden. Error: {ex.Message}");
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -104,12 +147,20 @@ namespace Web.Controllers
         {
             try
             {
-                _orderService.SoftDeleteOrder(id);
-                return Ok("Orden Eliminada");
+                var order = _orderService.SoftDeleteOrder(id);
+                if (!order)
+                {
+                    return BadRequest($"No se pudo deshabilitar la Order");
+                }
+                return Ok("Order dada de baja con exito");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
 
@@ -120,12 +171,20 @@ namespace Web.Controllers
         {
             try
             {
-                _orderService.HardDeleteOrder(id);
+                var order = _orderService.HardDeleteOrder(id);
+                if (!order)
+                {
+                    return BadRequest($"No se pudo borrar la Order del sistema");
+                }
                 return Ok("Orden Eliminada");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Se obtuvieron datos inesperados. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return NotFound($"Orden con ID {id} no encontrada. Error: {ex.Message}");
+                return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
         }
     }
