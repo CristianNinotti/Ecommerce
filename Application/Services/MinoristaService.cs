@@ -10,10 +10,12 @@ namespace Application.Services
     public class MinoristaService : IMinoristaService
     {
         private readonly IMinoristaRepository _minoristaRepository;
+        private readonly IUserAvailableService _userAvailableService;
 
-        public MinoristaService (IMinoristaRepository minoristaRepository)
+        public MinoristaService (IMinoristaRepository minoristaRepository, IUserAvailableService userAvailableService)
         {
             _minoristaRepository = minoristaRepository;
+            _userAvailableService = userAvailableService;
         }
         public List<MinoristaResponse> GetAllMinorista()
         {
@@ -33,6 +35,10 @@ namespace Application.Services
 
         public void CreateMinorista(MinoristaRequest minorista)
         {
+            if (_userAvailableService.UserExists(minorista.NameAccount, minorista.Email))
+            {
+                throw new InvalidOperationException("El NameAccount o Email ya están en uso.");
+            }
             var minoristaEntity = MinoristaProfile.ToMinoristaEntity(minorista);
             _minoristaRepository.CreateMinorista(minoristaEntity);
         }
@@ -40,9 +46,15 @@ namespace Application.Services
         public bool UpdateMinorista(int id, MinoristaRequest minorista)
         {
             var minoristaEntity = _minoristaRepository.GetMinoristaById(id);
-            if (minoristaEntity == null) 
+            if (minoristaEntity == null)
             {
-                return false;
+                return false;  // No se encontró el mayorista, no se puede actualizar
+            }
+
+            // Validar que el NameAccount o Email no estén en uso por otro usuario
+            if (_userAvailableService.UserExists(minorista.NameAccount, minorista.Email, id))
+            {
+                throw new InvalidOperationException("El NameAccount o Email ya están en uso por otro usuario.");
             }
             MinoristaProfile.ToMinoristaUpdate(minoristaEntity, minorista);
             _minoristaRepository.UpdateMinorista(minoristaEntity);

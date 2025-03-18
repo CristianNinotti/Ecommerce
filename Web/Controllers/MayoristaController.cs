@@ -32,28 +32,43 @@ namespace Web.Controllers
             return Ok(mayoristas);
         }
 
-        [HttpPost("Create Mayorista")]
+        [HttpPost("CreateMayorista")]
         public IActionResult CreateMayorista([FromBody] MayoristaRequest mayorista)
         {
-            _mayoristaService.CreateMayorista(mayorista);
-            return Ok("Mayorista Creado");
+            try
+            {
+                _mayoristaService.CreateMayorista(mayorista);
+                return Ok("Mayorista Creado");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("UpdateMayorista/{id}")]
         [Authorize(Policy = "MayoristaOrSuperAdmin")]
-
-        public IActionResult UpdateMayorista([FromRoute]int id, MayoristaRequest mayorista)
+        public IActionResult UpdateMayorista([FromRoute] int id, MayoristaRequest mayorista)
         {
             try
             {
                 var MayoristaUpdated = _mayoristaService.UpdateMayorista(id, mayorista);
                 return Ok(MayoristaUpdated);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = $"Mayorista con ID {id} no encontrado. Error: {ex.Message}" }); // Específico para no encontrado
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message }); // Mensaje claro si el nombre de cuenta o email ya están en uso
+            }
             catch (Exception ex)
             {
-                return NotFound($"Mayorista con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, new { message = "Ha ocurrido un error inesperado", detail = ex.Message }); // Captura de errores generales
             }
         }
+
 
         [HttpDelete("SoftDelete/{id}")]
         [Authorize(Policy = "MayoristaOrSuperAdmin")]

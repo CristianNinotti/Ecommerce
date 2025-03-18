@@ -2,6 +2,7 @@
 using Application.Mappings;
 using Application.Models.Request;
 using Application.Models.Response;
+using Domain.Entities;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -9,10 +10,12 @@ namespace Application.Services
     public class SuperAdminService : ISuperAdminService
     {
         private readonly ISuperAdminRepository _superAdminRepository;
+        private readonly IUserAvailableService _userAvailableService;
 
-        public SuperAdminService(ISuperAdminRepository superAdminRepository)
+        public SuperAdminService(ISuperAdminRepository superAdminRepository, IUserAvailableService userAvailableService)
         {
             _superAdminRepository = superAdminRepository;
+            _userAvailableService = userAvailableService;
         }
 
         public List<SuperAdminResponse> GetAllSuperAdmins()
@@ -32,33 +35,32 @@ namespace Application.Services
             return null;
         }
 
-        public void CreateSuperAdmin(SuperAdminRequest entity)
+        public void CreateSuperAdmin(SuperAdminRequest superAdmin)
         {
-            var superAdminEntity = SuperAdminProfile.ToSuperAdminEntity(entity);
+            if (_userAvailableService.UserExists(superAdmin.NameAccount, superAdmin.Email))
+            {
+                throw new InvalidOperationException("El NameAccount o Email ya están en uso.");
+            }
+            var superAdminEntity = SuperAdminProfile.ToSuperAdminEntity(superAdmin);
             _superAdminRepository.AddSuperAdmin(superAdminEntity);
         }
 
         public bool UpdateSuperAdmin(int id, SuperAdminRequest superAdmin)
         {
             var superAdminEntity = _superAdminRepository.GetSuperAdminById(id);
-
-            if (superAdminEntity != null)
+            if (superAdminEntity == null)
             {
-                if (!string.IsNullOrEmpty(superAdmin.NameAccount) && superAdmin.NameAccount != "string" && !string.IsNullOrEmpty(superAdmin.Password) && superAdmin.Password != "string" &&
-                    !string.IsNullOrEmpty(superAdmin.Password) && superAdmin.Password != "string" && !string.IsNullOrEmpty(superAdmin.FirstName) && superAdmin.FirstName != "string" &&
-                    !string.IsNullOrEmpty(superAdmin.LastName) && superAdmin.LastName != "string" && superAdmin.Dni != 0  && !string.IsNullOrEmpty(superAdmin.Email) && superAdmin.Email != "string")
-                {
-                    superAdminEntity.NameAccount = superAdmin.NameAccount;
-                    superAdminEntity.Password = superAdmin.Password;
-                    superAdminEntity.FirstName = superAdmin.FirstName;
-                    superAdminEntity.LastName = superAdmin.LastName;
-                    superAdminEntity.Dni = superAdmin.Dni;
-                    superAdminEntity.Email = superAdmin.Email;
-                    _superAdminRepository.UpdateSuperAdmin(superAdminEntity);
-                    return true;
-                }
+                return false;  // No se encontró el mayorista, no se puede actualizar
             }
-            return false;
+
+            // Validar que el NameAccount o Email no estén en uso por otro usuario
+            if (_userAvailableService.UserExists(superAdmin.NameAccount, superAdmin.Email, id))
+            {
+                throw new InvalidOperationException("El NameAccount o Email ya están en uso por otro usuario.");
+            }
+            SuperAdminProfile.ToSuperAdminUpdate(superAdminEntity, superAdmin);
+            _superAdminRepository.UpdateSuperAdmin(superAdminEntity);
+            return true;
         }
 
         public bool SoftDeleteSuperAdmin(int id)

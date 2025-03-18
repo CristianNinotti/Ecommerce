@@ -2,6 +2,7 @@
 using Infraestructure.Context;
 using Domain.Entities;
 using Infraestructure.Migrations;
+using Application.Services;
 
 namespace Infraestructure.Data
 {
@@ -9,12 +10,14 @@ namespace Infraestructure.Data
     {
         private readonly EcommerceDbContext _mayorista;
 
+
+
         public MayoristaRepository(EcommerceDbContext mayorista)
         {
             _mayorista = mayorista;
         }
 
-        public List<Mayorista> GetMayoristas()
+        public List<Mayorista> GetAllMayoristas()
         {
             return _mayorista.Mayoristas.ToList();
         }
@@ -25,6 +28,7 @@ namespace Infraestructure.Data
 
         public void CreateMayorista(Mayorista mayorista)
         {
+
             _mayorista.Mayoristas.Add(mayorista);
             _mayorista.SaveChanges();
         }

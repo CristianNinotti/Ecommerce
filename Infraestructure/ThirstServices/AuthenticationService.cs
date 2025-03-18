@@ -35,7 +35,7 @@ public class AuthenticationService : IAuthenticationService
     {
         User? user = null;
 
-        var mayoristas = _mayoristaRepository.GetMayoristas();
+        var mayoristas = _mayoristaRepository.GetAllMayoristas();
         user = mayoristas.FirstOrDefault(x =>
             x.NameAccount.Equals(authenticationRequest.NameAccount) &&
             x.Password.Equals(authenticationRequest.Password));

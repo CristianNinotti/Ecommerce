@@ -9,5 +9,6 @@ namespace Application.Interfaces
     public interface IUserAvailableService
     {
         bool IsUserAvailable(int userId);
+        bool UserExists(string nameAccount, string email, int? userId = null);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
+using Application.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,8 +35,15 @@ namespace Web.Controllers
         [HttpPost("Create Minorista")]
         public IActionResult CreateMinorista([FromBody] MinoristaRequest minorista)
         {
-            _minoristaService.CreateMinorista(minorista);
-            return Ok("Usuario Creado");
+            try
+            {
+                _minoristaService.CreateMinorista(minorista);
+                return Ok("Usuario Creado");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
         [HttpPut("UpdateMinorista/{id}")]
         [Authorize(Policy = "MinoristaOrSuperAdmin")]
@@ -42,12 +51,20 @@ namespace Web.Controllers
         {
             try
             {
-                var updatedMinorista = _minoristaService.UpdateMinorista(id, minorista);
-                return Ok(updatedMinorista);
+                var MinoristaUpdated = _minoristaService.UpdateMinorista(id, minorista);
+                return Ok(MinoristaUpdated);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = $"Mayorista con ID {id} no encontrado. Error: {ex.Message}" }); // Específico para no encontrado
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message }); // Mensaje claro si el nombre de cuenta o email ya están en uso
             }
             catch (Exception ex)
             {
-                return NotFound($"Minorista con ID {id} no encontrado. Error: {ex.Message}");
+                return StatusCode(500, new { message = "Ha ocurrido un error inesperado", detail = ex.Message }); // Captura de errores generales
             }
         }
         [HttpDelete("SoftDeleteMinorista/{id}")]

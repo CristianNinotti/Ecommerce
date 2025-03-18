@@ -4,7 +4,7 @@ namespace Domain.Interfaces
 {
     public interface IMayoristaRepository
     {
-        List<Mayorista> GetMayoristas();
+        List<Mayorista> GetAllMayoristas();
         Mayorista? GetMayoristaById(int id);
         void CreateMayorista(Mayorista mayorista);
         void UpdateMayorista(Mayorista mayorista);

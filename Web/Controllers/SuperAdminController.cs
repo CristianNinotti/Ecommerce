@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
 using Application.Models.Request;
 using Application.Models.Response;
+using Application.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,15 +64,38 @@ public class SuperAdminController : ControllerBase
     [HttpPost]
     public IActionResult CreateSuperAdmin([FromBody] SuperAdminRequest superAdmin)
     {
+        try 
+        { 
         _superAdminService.CreateSuperAdmin(superAdmin);
         return Ok();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
     public ActionResult<bool> UpdateSuperAdmin([FromRoute] int id, [FromBody] SuperAdminRequest superAdmin)
     {
-        return Ok(_superAdminService.UpdateSuperAdmin(id, superAdmin));
+        try
+        {
+            var SuperAdminUpdated = _superAdminService.UpdateSuperAdmin(id, superAdmin);
+            return Ok(SuperAdminUpdated);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = $"Mayorista con ID {id} no encontrado. Error: {ex.Message}" }); // Específico para no encontrado
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message }); // Mensaje claro si el nombre de cuenta o email ya están en uso
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Ha ocurrido un error inesperado", detail = ex.Message }); // Captura de errores generales
+        }
     }
 
     [HttpDelete("SoftDeleteAdmin/{id}")]
