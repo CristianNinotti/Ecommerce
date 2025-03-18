@@ -30,16 +30,24 @@ namespace Application.Services
         // Validacion si existen los usuarios.
         public bool UserExists(string nameAccount, string email, int? userId = null)
         {
+            //Normalizacion
+            var normalizedNameAccount = nameAccount.ToLower().Trim();
+            var normalizedEmail = email.ToLower().Trim();
+
             var mayorista = _mayoristaRepository.GetAllMayoristas()
-                .Any(x => (x.NameAccount == nameAccount || x.Email == email) && (userId == null || x.Id != userId));
+                .Any(x => (x.NameAccount.ToLower().Trim() == normalizedNameAccount || x.Email.ToLower().Trim() == normalizedEmail)
+                          && (userId == null || x.Id != userId));
 
             var minorista = _minoristaRepository.GetAllMinoristas()
-                .Any(x => (x.NameAccount == nameAccount || x.Email == email) && (userId == null || x.Id != userId));
+                .Any(x => (x.NameAccount.ToLower().Trim() == normalizedNameAccount || x.Email.ToLower().Trim() == normalizedEmail)
+                          && (userId == null || x.Id != userId));
 
             var superAdmin = _superAdminRepository.GetAllSuperAdmins()
-                .Any(x => (x.NameAccount == nameAccount || x.Email == email) && (userId == null || x.Id != userId));
+                .Any(x => (x.NameAccount.ToLower().Trim() == normalizedNameAccount || x.Email.ToLower().Trim() == normalizedEmail)
+                          && (userId == null || x.Id != userId));
 
             return mayorista || minorista || superAdmin;
         }
+
     }
 }
