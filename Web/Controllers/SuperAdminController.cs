@@ -68,7 +68,7 @@ public class SuperAdminController : ControllerBase
         try 
         { 
         _superAdminService.CreateSuperAdmin(superAdmin);
-        return Ok();
+        return Ok("Usuario Creado");
         }
         catch (InvalidOperationException ex)
         {
