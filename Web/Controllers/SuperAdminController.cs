@@ -25,7 +25,7 @@ public class SuperAdminController : ControllerBase
     {
         var response = _superAdminService.GetAllSuperAdmins();
 
-        if (response.Any())
+        if (!response.Any()) // Cambio aquí: !response.Any() en lugar de response.Any()
         {
             return NotFound("SuperAdmins not found");
         }
@@ -37,15 +37,16 @@ public class SuperAdminController : ControllerBase
     [Authorize(Policy = "SuperAdminOnly")]
     public IActionResult GetAllSuperAdminAvailable()
     {
-        var response = _superAdminService.GetAllSuperAdmins().Where(o=> o.Available);
+        var response = _superAdminService.GetAllSuperAdmins().Where(o => o.Available);
 
-        if (response.Any())
+        if (!response.Any()) // Cambio aquí también
         {
             return NotFound("SuperAdmins not found");
         }
 
         return Ok(response);
     }
+
 
     [HttpGet("{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
