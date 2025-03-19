@@ -89,7 +89,7 @@ public class SuperAdminController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest($"No se pudo crear el SuperAdmin");
+            return BadRequest($"No se pudo crear el SuperAdmin. Error: {ex.Message}");
         }
         catch (ArgumentException ex)
         {

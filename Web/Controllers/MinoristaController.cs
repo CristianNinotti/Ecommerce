@@ -67,7 +67,7 @@ namespace Web.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest($"No se pudo crear al Minorista");
+                return BadRequest($"No se pudo crear al Minorista. Error: {ex.Message}");
             }
             catch (ArgumentException ex)
             {

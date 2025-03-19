@@ -88,7 +88,7 @@ namespace Web.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest($"No se pudo crear el OrderItem");
+                return BadRequest($"No se pudo crear el OrderItem. Error: {ex.Message}");
             }
             catch (ArgumentException ex)
             {
