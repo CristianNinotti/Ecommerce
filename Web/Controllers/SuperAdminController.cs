@@ -110,7 +110,7 @@ public class SuperAdminController : ControllerBase
             var sAdmin = _superAdminService.UpdateSuperAdmin(id, superAdmin);
             if (!sAdmin)
             {
-                return BadRequest($"No se pudo actualizar al SuperAdmin");
+                return BadRequest($"No se pudo actualizar al SuperAdmin.");
             }
             return Ok($"SuperAdmin actualizado con exito");
         }

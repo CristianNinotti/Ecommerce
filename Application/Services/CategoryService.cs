@@ -11,11 +11,13 @@ namespace Application.Services
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IProductOrCategoryService _productOrCategoryService;
 
-        public CategoryService (ICategoryRepository categoryRepository, IProductRepository productRepository)
+        public CategoryService (ICategoryRepository categoryRepository, IProductRepository productRepository, IProductOrCategoryService productOrCategoryService)
         {
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
+            _productOrCategoryService = productOrCategoryService;
         }
 
         public List<CategoryResponse> GetAllCategories()
@@ -36,6 +38,10 @@ namespace Application.Services
 
         public void CreateCategory(CategoryRequest category)
         {
+            if (_productOrCategoryService.CategoryExists(category.Name))
+            {
+                throw new InvalidOperationException($"Ya existe una Category con ese nombre");
+            }
             var CategoryEntity = CategoryProfile.ToCategoryEntity(category);
             _categoryRepository.CreateCategory(CategoryEntity);
         }
@@ -46,6 +52,10 @@ namespace Application.Services
             if (CategoryEntity == null)
             {
                 return false;
+            }
+            if (_productOrCategoryService.CategoryExists(category.Name) && category.Name != CategoryEntity.Name)
+            {
+                throw new InvalidOperationException($"Ya existe una Category con ese nombre");
             }
             CategoryProfile.ToCategoryEntityUpdate(CategoryEntity, category);
             _categoryRepository.UpdateCategory(CategoryEntity);

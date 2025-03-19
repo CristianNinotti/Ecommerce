@@ -116,6 +116,7 @@ builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserAvailableService, UserAvailableService>();
+builder.Services.AddScoped<IProductOrCategoryService, ProductOrCategoryService>();
 #endregion
 
 // Configuración de repositorios de aplicación e infraestructura

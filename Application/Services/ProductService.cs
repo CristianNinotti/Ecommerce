@@ -13,12 +13,14 @@ namespace Application.Services
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IProductOrCategoryService _productOrCategoryService;
 
-        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IOrderItemRepository orderItemRepository)
+        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IOrderItemRepository orderItemRepository, IProductOrCategoryService productOrCategoryService)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _orderItemRepository = orderItemRepository;
+            _productOrCategoryService = productOrCategoryService;
         }
         public List<ProductResponse> GetAllProducts()
         {
@@ -43,6 +45,10 @@ namespace Application.Services
 
         public (bool success, string message) CreateProduct(ProductRequest product)
         {
+            if (_productOrCategoryService.ProductExists(product.Name))
+            {
+                return (false, "Ya existe un producto con ese nombre.");
+            }
             var category = _categoryRepository.GetCategoryById(product.CategoryId);
 
             if (category == null)
@@ -55,6 +61,8 @@ namespace Application.Services
                 return (false, "La categoría está eliminada y no puede usarse.");
             }
 
+
+
             var productEntity = ProductProfile.ToProductEntity(product);
             productEntity.Categoria = category;
             _productRepository.CreateProductRepository(productEntity);
@@ -66,7 +74,11 @@ namespace Application.Services
         {
             var productEntity = _productRepository.GetProductByIdRepository(id);
             var category = _categoryRepository.GetCategoryById(request.CategoryId);
-            if (category != null && productEntity != null && productEntity.Available == true)
+            if (_productOrCategoryService.ProductExists(request.Name) && request.Name != productEntity?.Name)
+            {
+                throw new InvalidOperationException($"Ya existe un Product con ese nombre");
+            }
+            if (category != null && productEntity != null && productEntity.Available == true && category.Available == true)
             {
                 ProductProfile.ToProductUpdate(productEntity, request);
                 productEntity.Categoria = category;

@@ -49,12 +49,16 @@ namespace Application.Services
             {
                 _orderRepository.CreateOrderRepository(order);
             }
+            else
+            {
+                throw new InvalidOperationException("No se pudo crear Order");
+            }
         }
 
         public bool ToUpdateOrder(int userId, int orderId, OrderRequest request)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderId);
-            if (orderEntity == null || userId != orderEntity.UserId || orderEntity.User == null || orderEntity.User.Available == false)
+            if (orderEntity == null || userId != orderEntity.UserId || orderEntity.User == null || orderEntity.User.Available == false || orderEntity.OrderStatus == false|| request.UserId != userId || request.UserId != orderEntity.UserId)
             {
                 return false;
             }

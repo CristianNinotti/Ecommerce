@@ -50,7 +50,7 @@ namespace Application.Services
                     return false;
                 }
                 var order = _orderRepository.GetOrderByIdRepository(payment.OrderId);
-                if (order == null || order.OrderItems == null || !order.OrderItems.Any())
+                if (order == null || order.OrderItems == null || order.OrderStatus == false || !order.OrderItems.Any())
                 {
                     return false;
                 }
@@ -78,7 +78,8 @@ namespace Application.Services
         public bool ToUpdatePayment(int id, PaymentRequest request)
         {
             var paymentEntity = _paymentRepository.GetPaymentById(id);
-            if (paymentEntity != null)
+            var orderEntity = _orderRepository.GetOrderByIdRepository(request.OrderId);
+            if (paymentEntity != null && orderEntity != null && orderEntity.OrderStatus == true && orderEntity.OrderItems != null && orderEntity.OrderItems.Any() && orderEntity.TotalAmount == request.Amount)
             {
                 PaymentProfile.ToPaymentUpdate(paymentEntity, request);
                 _paymentRepository.UpdatePayment(paymentEntity);

@@ -52,7 +52,7 @@ namespace Application.Services
         {
             var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderItem.OrderId);
-            if (product != null && orderEntity != null && orderEntity.OrderStatus == true && product.Available == true && orderItem.Quantity <= product.Stock)
+            if (product != null && orderEntity != null && orderEntity.OrderStatus && product.Available && orderItem.Quantity <= product.Stock)
             {
                 var mayoristaEntity = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
                 var totalPrice = orderItem.Quantity * product.Price;
@@ -63,8 +63,12 @@ namespace Application.Services
                     orderItemEntity.TotalPrice = orderItemEntity.TotalPrice * discount;
                 }
                 _orderItemRepository.CreateOrderItemRepository(orderItemEntity);
-                orderEntity.TotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderItem.OrderId).Where(oi => oi.Available == true).Sum(oi => oi.TotalPrice);
+                orderEntity.TotalAmount = _orderItemRepository.GetOrderItemsByOrderIdRepository(orderItem.OrderId).Where(oi => oi.Available).Sum(oi => oi.TotalPrice);
                 _orderRepository.UpdateOrderRepository(orderEntity);
+            }
+            else
+            {
+                throw new InvalidOperationException("No se pudo crear OrderItem");
             }
         }
 
@@ -73,7 +77,7 @@ namespace Application.Services
             var orderEntity = _orderRepository.GetOrderByIdRepository(request.OrderId);
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(orderItemId);
             var product = _productRepository.GetProductByIdRepository(request.ProductId);
-            if (orderEntity != null && orderItemEntity != null && product != null && orderEntity.OrderStatus == true && product.Available == true)
+            if (orderEntity != null && orderItemEntity != null && orderItemEntity.Available == true && product != null && orderEntity.OrderStatus == true && product.Available == true)
             {
                 var mayoristaEntity = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
                 var stockDisponible = product.Stock + orderItemEntity.Quantity;
