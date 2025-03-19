@@ -150,6 +150,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
+app.UseMiddleware<UserValidationMiddleware>();
+
 // Habilitación de CORS
 app.UseCors("AllowAll");
 

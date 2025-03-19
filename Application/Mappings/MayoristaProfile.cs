@@ -49,6 +49,7 @@ namespace Application.Mappings
             return mayorista.Select(c => new MayoristaResponse
             {
                 NameAccount = c.NameAccount,
+                Password = c.Password,
                 Id = c.Id,
                 FirstName = c.FirstName,
                 LastName = c.LastName,

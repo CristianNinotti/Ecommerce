@@ -115,7 +115,7 @@ namespace Web.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest($"No se pudo crear Category con exito");
+                return BadRequest($"No se pudo crear al Mayorista. Error: {ex.Message}");
             }
             catch (ArgumentException ex)
             {
