@@ -18,7 +18,7 @@ namespace Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IProductRepository _productRepository;
-        public PaymentService(IPaymentRepository paymentRepository,IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository)
+        public PaymentService(IPaymentRepository paymentRepository, IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IProductRepository productRepository)
         {
             _paymentRepository = paymentRepository;
             _orderRepository = orderRepository;
@@ -42,44 +42,45 @@ namespace Application.Services
             return null;
         }
 
-        public bool CreatePayment(PaymentRequest payment)
+        public bool CreatePayment(int userId, PaymentRequest payment)
         {
-                var paymentEntity = PaymentProfile.ToPaymentEntity(payment);
-                if (paymentEntity == null)
+            var paymentEntity = PaymentProfile.ToPaymentEntity(payment);
+            if (paymentEntity == null)
+            {
+                return false;
+            }
+            var order = _orderRepository.GetOrderByIdRepository(payment.OrderId);
+            if (order == null || userId != order.UserId || order.OrderItems == null || order.OrderStatus == false || !order.OrderItems.Any() || order.Payment != null)
+            {
+                return false;
+            }
+            if (payment.Amount != order.TotalAmount)
+            {
+                return false;
+            }
+            foreach (var orderItem in order.OrderItems)
+            {
+                var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
+                if (product == null || product.Stock < orderItem.Quantity)
                 {
-                    return false;
+                    throw new InvalidOperationException($"No hay suficiente stock");
                 }
-                var order = _orderRepository.GetOrderByIdRepository(payment.OrderId);
-                if (order == null || order.OrderItems == null || order.OrderStatus == false || !order.OrderItems.Any())
-                {
-                    return false;
-                }
-                if (payment.Amount != order.TotalAmount)
-                {
-                    return false;
-                }
-                foreach (var orderItem in order.OrderItems)
-                {
-                    var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
-                    if (product == null || product.Stock < orderItem.Quantity)
-                    {
-                        return false;
-                    }
-                    product.Stock -= orderItem.Quantity;
-                    _productRepository.UpdateProductRepository(product);
-                    _orderItemRepository.UpdateOrderItemRepository(orderItem);
-                }
-                order.OrderStatus = false;
-                order.Payment = paymentEntity;
+                paymentEntity.PaymentDate = DateTime.Now;
+                product.Stock -= orderItem.Quantity;
+                _productRepository.UpdateProductRepository(product);
+                _orderItemRepository.UpdateOrderItemRepository(orderItem);
+            }
+            order.OrderStatus = false;
+            order.Payment = paymentEntity;
             _paymentRepository.CreatePayment(paymentEntity);
             _orderRepository.UpdateOrderRepository(order);
             return true;
         }
-        public bool ToUpdatePayment(int id, PaymentRequest request)
+        public bool ToUpdatePayment(int userId, int id, PaymentRequest request)
         {
             var paymentEntity = _paymentRepository.GetPaymentById(id);
             var orderEntity = _orderRepository.GetOrderByIdRepository(request.OrderId);
-            if (paymentEntity != null && orderEntity != null && orderEntity.OrderStatus == true && orderEntity.OrderItems != null && orderEntity.OrderItems.Any() && orderEntity.TotalAmount == request.Amount)
+            if (paymentEntity != null && orderEntity != null && orderEntity?.Payment?.Id == paymentEntity.Id && userId == orderEntity.UserId && orderEntity.OrderItems != null && orderEntity.OrderItems.Any() && orderEntity.TotalAmount == request.Amount)
             {
                 PaymentProfile.ToPaymentUpdate(paymentEntity, request);
                 _paymentRepository.UpdatePayment(paymentEntity);

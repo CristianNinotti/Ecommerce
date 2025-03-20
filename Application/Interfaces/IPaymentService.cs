@@ -12,8 +12,8 @@ namespace Application.Interfaces
     {
         List<PaymentResponse> GetAllPayments();
         PaymentResponse? GetPaymentById(int id);
-        bool CreatePayment(PaymentRequest payment);
-        bool ToUpdatePayment(int id, PaymentRequest request);
+        bool CreatePayment(int userId, PaymentRequest payment);
+        bool ToUpdatePayment(int userId, int id, PaymentRequest request);
         bool DeletePayment(int id);
     }
 }

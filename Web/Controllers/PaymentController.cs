@@ -61,7 +61,14 @@ namespace Web.Controllers
         {
             try
             {
-                var paymentCreated = _paymentService.CreatePayment(request);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+                var paymentCreated = _paymentService.CreatePayment(userId, request);
                 if (!paymentCreated)
                 {
                     return BadRequest("No se pudo crear el pago.");
@@ -79,11 +86,18 @@ namespace Web.Controllers
         }
         [HttpPut("UpdatePayment/{paymentId}")]
         [Authorize(Policy = "MinoristaOrMayoristaOrSuperAdmin")]
-        public IActionResult UpdatePayment([FromRoute] int paymentId, PaymentRequest request)
+        public IActionResult UpdatePayment([FromRoute] int paymentId, [FromBody] PaymentRequest request)
         {
             try
             {
-                var payment = _paymentService.ToUpdatePayment(paymentId, request);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+                var payment = _paymentService.ToUpdatePayment(userId, paymentId, request);
                 if (!payment)
                 {
                     return BadRequest($"No se pudo actualizar el pago.");
