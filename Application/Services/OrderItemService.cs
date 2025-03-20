@@ -48,11 +48,11 @@ namespace Application.Services
             return null;
         }
 
-        public void CreateOrderItem(OrderItemRequest orderItem)
+        public void CreateOrderItem(int userId, OrderItemRequest orderItem)
         {
             var product = _productRepository.GetProductByIdRepository(orderItem.ProductId);
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderItem.OrderId);
-            if (product != null && orderEntity != null && orderEntity.OrderStatus && product.Available && orderItem.Quantity <= product.Stock)
+            if (product != null && orderEntity != null  && userId == orderEntity.UserId && orderEntity.OrderStatus && product.Available && orderItem.Quantity <= product.Stock)
             {
                 var mayoristaEntity = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
                 var totalPrice = orderItem.Quantity * product.Price;
@@ -72,12 +72,12 @@ namespace Application.Services
             }
         }
 
-        public bool ToUpdateOrderItem(int orderItemId, OrderItemRequest request)
+        public bool ToUpdateOrderItem(int userId, int orderItemId, OrderItemRequest request)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(request.OrderId);
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(orderItemId);
             var product = _productRepository.GetProductByIdRepository(request.ProductId);
-            if (orderEntity != null && orderItemEntity != null && orderItemEntity.Available == true && product != null && orderEntity.OrderStatus == true && product.Available == true)
+            if (orderEntity != null && userId == orderEntity.UserId && orderItemEntity != null && orderEntity.OrderItems.Contains(orderItemEntity)&& orderItemEntity.Available == true && product != null && orderEntity.OrderStatus == true && product.Available == true)
             {
                 var mayoristaEntity = _mayoristaRepository.GetMayoristaById(orderEntity.UserId);
                 var stockDisponible = product.Stock + orderItemEntity.Quantity;
@@ -98,10 +98,14 @@ namespace Application.Services
             return false;
         }
 
-        public bool SoftDeleteOrderItem(int id)
+        public bool SoftDeleteOrderItem(int userId, int id)
         {
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(id);
-            if (orderItemEntity == null)
+            if (orderItemEntity == null || userId != orderItemEntity?.Order?.UserId)
+            {
+                return false;
+            }
+            if (userId != orderItemEntity?.Order?.UserId)
             {
                 return false;
             }
@@ -120,10 +124,10 @@ namespace Application.Services
             return true;
         }
 
-        public bool HardDeleteOrderItem(int id)
+        public bool HardDeleteOrderItem(int userId, int id)
         {
             var orderItemEntity = _orderItemRepository.GetOrderItemByIdRepository(id);
-            if (orderItemEntity == null)
+            if (orderItemEntity == null || userId != orderItemEntity?.Order?.UserId)
             {
                 return false;
             }

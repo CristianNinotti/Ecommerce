@@ -89,7 +89,15 @@ namespace Web.Controllers
         {
             try
             {
-                _orderService.CreateOrder(orderRequest);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+
+                _orderService.CreateOrder(userId, orderRequest);
                 return Ok("Orden creado con exito");
             }
             catch (InvalidOperationException ex)
@@ -111,16 +119,16 @@ namespace Web.Controllers
 
         public IActionResult UpdateOrder([FromRoute] int orderId, [FromBody] OrderRequest orderRequest)
         {
-            string? userIdClaim = User.FindFirst("Id")?.Value;
-
-            if (userIdClaim == null)
-            {
-                return BadRequest("No esta logueado");
-            }
-            int userId = int.Parse(userIdClaim);
-
             try
             {
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+
                 var updateSuccess = _orderService.ToUpdateOrder(userId, orderId, orderRequest);
 
                 if (!updateSuccess)
@@ -147,7 +155,14 @@ namespace Web.Controllers
         {
             try
             {
-                var order = _orderService.SoftDeleteOrder(id);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+                var order = _orderService.SoftDeleteOrder(userId, id);
                 if (!order)
                 {
                     return BadRequest($"No se pudo deshabilitar la Order");
@@ -171,7 +186,14 @@ namespace Web.Controllers
         {
             try
             {
-                var order = _orderService.HardDeleteOrder(id);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+                var order = _orderService.HardDeleteOrder(userId, id);
                 if (!order)
                 {
                     return BadRequest($"No se pudo borrar la Order del sistema");

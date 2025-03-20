@@ -39,13 +39,14 @@ namespace Application.Services
             }
             return null;
         }
-        public void CreateOrder(OrderRequest orderRequest)
+        public void CreateOrder(int userId ,OrderRequest orderRequest)
         {
             var order = OrderProfile.ToOrderEntity(orderRequest);
             var mayorista = _mayoristaRepository.GetMayoristaById(orderRequest.UserId);
             var minorista = _minoristaRepository.GetMinoristaById(orderRequest.UserId);
             var superAdmin = _superAdminRepository.GetSuperAdminById(orderRequest.UserId);
-            if (mayorista != null && mayorista.Available == true || minorista != null && minorista.Available == true || superAdmin != null && superAdmin.Available == true)
+
+            if (userId == order.UserId && ( mayorista != null && mayorista.Available == true || minorista != null && minorista.Available == true || superAdmin != null && superAdmin.Available == true))
             {
                 _orderRepository.CreateOrderRepository(order);
             }
@@ -67,10 +68,10 @@ namespace Application.Services
             return true;
         }
 
-        public bool SoftDeleteOrder(int orderId)
+        public bool SoftDeleteOrder(int userId, int orderId)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderId);
-            if (orderEntity == null)
+            if (orderEntity == null || userId != orderEntity.UserId)
             {
                 return false;
             }
@@ -82,10 +83,10 @@ namespace Application.Services
             _orderRepository.SoftDeleteOrderRepository(orderEntity);
             return true;
         }
-        public bool HardDeleteOrder(int orderId)
+        public bool HardDeleteOrder(int userId,  int orderId)
         {
             var orderEntity = _orderRepository.GetOrderByIdRepository(orderId);
-            if (orderEntity == null)
+            if (orderEntity == null || userId != orderEntity.UserId)
             {
                 return false;
             }

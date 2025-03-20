@@ -7,9 +7,9 @@ namespace Application.Interfaces
     {
         List<OrderResponse> GetAllOrders();
         OrderResponse? GetOrderById(int id);
-        void CreateOrder(OrderRequest orderRequest);
+        void CreateOrder(int userId, OrderRequest orderRequest);
         bool ToUpdateOrder(int userId, int orderId, OrderRequest request);
-        bool SoftDeleteOrder(int orderId);
-        bool HardDeleteOrder(int orderId);
+        bool SoftDeleteOrder(int userId, int orderId);
+        bool HardDeleteOrder(int userId, int orderId);
     }
 }

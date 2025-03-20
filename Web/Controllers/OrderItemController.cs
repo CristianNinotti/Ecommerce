@@ -83,7 +83,15 @@ namespace Web.Controllers
         {
             try
             {
-                _orderItemService.CreateOrderItem(orderItem);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+
+                _orderItemService.CreateOrderItem(userId, orderItem);
                 return Ok("OrderItem Creado con exito");
             }
             catch (InvalidOperationException ex)
@@ -106,7 +114,15 @@ namespace Web.Controllers
 
             try
             {
-                var updateSuccess = _orderItemService.ToUpdateOrderItem(orderItemId, orderItem);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+
+                var updateSuccess = _orderItemService.ToUpdateOrderItem(userId, orderItemId, orderItem);
 
                 if (!updateSuccess)
                 {
@@ -130,7 +146,15 @@ namespace Web.Controllers
         {
             try
             {
-                var orderItem = _orderItemService.SoftDeleteOrderItem(id);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+
+                var orderItem = _orderItemService.SoftDeleteOrderItem(userId,id);
                 if (!orderItem)
                 {
                     return BadRequest($"No se pudo dar de baja el OrderItem");
@@ -153,7 +177,15 @@ namespace Web.Controllers
         {
             try
             {
-                var orderItem = _orderItemService.HardDeleteOrderItem(id);
+                string? userIdClaim = User.FindFirst("Id")?.Value;
+
+                if (userIdClaim == null)
+                {
+                    return BadRequest("No esta logueado");
+                }
+                int userId = int.Parse(userIdClaim);
+
+                var orderItem = _orderItemService.HardDeleteOrderItem(userId, id);
                 if (!orderItem)
                 {
                     return BadRequest($"No se pudo borrar el OrderItem");
