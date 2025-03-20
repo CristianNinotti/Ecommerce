@@ -169,6 +169,6 @@ public class SuperAdminController : ControllerBase
         {
             return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
         }
-        return Ok();
+        return Ok("SuperAdmin Borrado con exito");
     }
 }
