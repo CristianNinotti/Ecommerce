@@ -50,6 +50,7 @@ namespace Application.Mappings
                 Id = c.Id,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
+                Password = c.Password,
                 Dni = c.Dni,
                 Email = c.Email,
                 PhoneNumber = c.PhoneNumber,

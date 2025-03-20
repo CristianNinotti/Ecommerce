@@ -25,16 +25,14 @@ namespace Web.Controllers
                 var minoristas = _minoristaService.GetAllMinorista();
                 if (!minoristas.Any())
                 {
-                    return BadRequest($"No hay ningun Minorista registrado en el sistema");
+                    return NotFound("No hay ningún Minorista registrado en el sistema.");
                 }
-                return Ok();
+                return Ok(minoristas);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error interno en el servidor. Error: {ex.Message}");
             }
-
-
         }
 
         [HttpGet("All Minoristas Available")]
