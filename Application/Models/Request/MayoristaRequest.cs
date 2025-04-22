@@ -4,6 +4,9 @@
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+
+        public int? CUIT { get; set; }
+        public string? Caterogia { get; set; }
         public string NameAccount { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

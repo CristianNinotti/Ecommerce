@@ -58,7 +58,7 @@ namespace Application.Services
                 var totalPrice = orderItem.Quantity * product.Price;
                 var orderItemEntity = OrderItemProfile.ToOrderItemEntity(orderItem, product.Price);
                 orderItemEntity.TotalPrice = totalPrice;
-                if (mayoristaEntity != null)
+                if (mayoristaEntity != null && mayoristaEntity.CUIT != null && mayoristaEntity.Categoria != null)
                 {
                     orderItemEntity.TotalPrice = orderItemEntity.TotalPrice * discount;
                 }

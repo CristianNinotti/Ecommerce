@@ -12,6 +12,8 @@ namespace Application.Mappings
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
+                CUIT = request.CUIT,
+                Categoria = request.Caterogia,
                 NameAccount = request.NameAccount,
                 Password = request.Password,
                 Dni = request.Dni,
@@ -34,6 +36,8 @@ namespace Application.Mappings
                 Id = response.Id,
                 FirstName = response.FirstName,
                 LastName = response.LastName,
+                CUIT = response.CUIT,
+                Categoria = response.Categoria,
                 NameAccount = response.NameAccount,
                 Password = response.Password,
                 Dni = response.Dni,
@@ -53,6 +57,8 @@ namespace Application.Mappings
                 Id = c.Id,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
+                CUIT = c.CUIT,
+                Categoria = c.Categoria,
                 Dni = c.Dni,
                 Email = c.Email,
                 PhoneNumber = c.PhoneNumber,
@@ -66,6 +72,8 @@ namespace Application.Mappings
         {
             mayorista.FirstName = request.FirstName;
             mayorista.LastName = request.LastName;
+            mayorista.CUIT = request.CUIT;
+            mayorista.Categoria = request.Caterogia;
             mayorista.NameAccount = request.NameAccount;
             mayorista.Password = request.Password;
             mayorista.Email = request.Email;
