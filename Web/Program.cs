@@ -153,10 +153,12 @@ app.UseAuthentication();
 
 app.UseMiddleware<UserValidationMiddleware>();
 
+app.UseAuthorization();
+
+
+
 // Habilitación de CORS
 app.UseCors("AllowAll");
-
-app.UseAuthorization();
 
 app.MapControllers();
 

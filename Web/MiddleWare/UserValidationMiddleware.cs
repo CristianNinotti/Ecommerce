@@ -3,14 +3,12 @@
 public class UserValidationMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IUserAvailableService _userAvailableService;
 
-    public UserValidationMiddleware(RequestDelegate next, IUserAvailableService userAvailableService)
+    public UserValidationMiddleware(RequestDelegate next)
     {
         _next = next;
-        _userAvailableService = userAvailableService;
     }
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, IUserAvailableService userAvailableService)
     {
         var userIdClaim = context.User.FindFirst("Id")?.Value;
         if (userIdClaim != null)
@@ -22,7 +20,7 @@ public class UserValidationMiddleware
                 return;
             }
 
-            var isUserAvailable = _userAvailableService.IsUserAvailable(userId);
+            var isUserAvailable = userAvailableService.IsUserAvailable(userId);
             if (!isUserAvailable)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
